@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>🔥 스팀 할인 게임 (자동 업데이트)</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<h1>🔥 스팀 할인 게임 (자동 업데이트)</h1>
+
+<div class="controls-container">
+    <input type="text" id="searchInput" placeholder="게임 이름으로 검색...">
+    <select id="sortSelect">
+      <option value="savings">할인율 높은순</option>
+      <option value="salePrice">가격 낮은순</option>
+      <option value="title">이름순</option>
+    </select>
+</div>
+
+<div id="loadingSpinner" class="loading-spinner"></div>
+
+<div id="gamesContainer" class="games">
+  <!-- 게임 카드들이 여기에 동적으로 추가됩니다. -->
+</div>
+
+<!-- Firebase SDK 추가 -->
+<script src="/firebase/firebase-app.js"></script>
+<script src="/firebase/firebase-firestore.js"></script>
+
+<script src="main.js"></script>
+</body>
+</html>
