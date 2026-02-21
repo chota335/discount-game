@@ -3,9 +3,7 @@
 
 ## **1. Project Overview**
 
-This project is a web application designed to showcase the latest game deals from the Steam store. It fetches data from the CheapShark API and presents it in a visually appealing and user-friendly interface. The core goal is to provide gamers with a quick and easy way to discover current discounts on PC games.
-
-The application is built using modern, framework-less web technologies (HTML, CSS, JavaScript) and emphasizes a clean, responsive, and aesthetically pleasing design following the "Glassmorphism" trend.
+This project is a web application designed to showcase the latest game deals from the Steam store. It fetches data from the CheapShark API and presents it in a visually appealing and user-friendly interface. The core goal is to provide gamers with a quick and easy way to discover current discounts on PC games, while also gathering analytics on which deals are most popular.
 
 ## **2. Core Features & Design (Current Version)**
 
@@ -21,45 +19,40 @@ This section documents all features, styles, and design elements implemented in 
     *   **Rounded Corners:** Smooth, modern look with `border-radius: 18px`.
     *   **Depth & Shadow:** A soft `box-shadow` that intensifies on hover, making the card appear "lifted."
     *   **Interactivity:** A subtle `transform` effect on hover (`translateY(-10px) scale(1.03)`) provides satisfying feedback.
+*   **Search Bar:**
+    *   A beautifully styled search input that matches the Glassmorphism theme.
+    *   Features a glowing `box-shadow` on focus to draw the user's attention.
 *   **Typography:** Clean and readable 'Segoe UI', with clear font hierarchy for the header and card information.
 
 ### **Functionality**
 
-*   **API Integration:** Fetches a list of the top 40 game deals from the CheapShark API (`https://www.cheapshark.com/api/1.0/deals`).
+*   **API Integration:** Fetches a list of the top 100 game deals from the CheapShark API, sorted by "Deal Rating" for the best value (`pageSize=100&sortBy=Deal Rating`).
+*   **Real-time Search:**
+    *   Users can type in a search bar to instantly filter the displayed game deals.
+    *   The search is case-insensitive and updates the view in real-time.
+    *   A message is displayed if no games match the search criteria.
 *   **Dynamic Rendering:** Game deals are dynamically rendered into game cards using JavaScript.
 *   **Image Handling:**
-    *   Displays high-quality header images directly from Steam's CDN for a polished look (`https://cdn.cloudflare.steamstatic.com/steam/apps/{steamAppID}/header.jpg`).
-    *   Includes a fallback to a lower-quality thumbnail (`game.thumb`) if the Steam App ID is unavailable, ensuring no broken images.
-    *   Images maintain their correct aspect ratio (`height: auto`) to prevent distortion.
+    *   Displays high-quality header images directly from Steam's CDN.
+    *   Includes a fallback to a thumbnail if the Steam App ID is unavailable, ensuring no broken images.
 *   **Deal Information:**
     *   **Discount Badge:** A prominent, gradient-colored badge shows the percentage discount.
     *   **"HOT" Badge:** Games with a discount of over 70% are highlighted with a special "HOT" badge.
     *   **Pricing:** Clearly displays the sale price and the original price (with a strikethrough).
 *   **External Linking:** Clicking on a game card opens the deal page on CheapShark in a new tab.
-*   **Loading State:** A "Loading..." message is displayed while the API data is being fetched.
+*   **Click-Through Analytics:**
+    *   Integrates a serverless function (`/functions/track-click`) built for Cloudflare's edge network.
+    *   When a user clicks a game card, a `fetch` request is sent to this function in the background.
+    *   The function records the `dealID` and increments a counter in a Cloudflare KV store (`CLICKS`), providing valuable data on deal popularity without impacting user experience.
 
 ---
 
-## **3. Current Task: Implement Real-time Search**
+## **3. Current Task: Deploy to Production**
 
-This section outlines the plan and steps for the current requested change: adding a real-time search functionality.
+This section outlines the plan for deploying the application to a production environment, making it accessible to the public.
 
 ### **Plan & Actionable Steps**
 
-1.  **Modify `index.html`:**
-    *   Add an `<input>` element within the `<header>` to serve as the search bar.
-    *   Assign it a unique ID (e.g., `searchInput`) for easy access in JavaScript.
-
-2.  **Style with `style.css`:**
-    *   Style the new search input to match the existing Glassmorphism design.
-    *   Ensure it is centered, has appropriate padding, border-radius, and colors.
-    *   Add placeholder text styling to guide the user.
-
-3.  **Implement Logic in `main.js`:**
-    *   Get a reference to the `searchInput` element.
-    *   Add an `input` event listener to the search bar.
-    *   Inside the event handler:
-        *   Get the user's search query (and convert it to lowercase for case-insensitive matching).
-        *   Filter the master `gamesData` array based on whether the game's title (also converted to lowercase) includes the search query.
-        *   Create a new function or modify `renderGames` to accept a list of games to render. Call this function with the filtered list.
-    *   Ensure that if the search bar is empty, the full list of games is displayed.
+1.  **Commit Changes:** Ensure all new features (Click-Through Analytics) are committed to the Git repository.
+2.  **Deploy to Cloudflare Pages:** Utilize Cloudflare Pages for a seamless, scalable, and performant deployment.
+3.  **Verify:** Once deployed, test all functionalities, including the API fetch, search, and click tracking, to ensure everything is working as expected.

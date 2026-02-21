@@ -59,6 +59,10 @@ function renderGames(games) {
     `;
 
     card.addEventListener("click", () => {
+      // Track the click in the background
+      fetch(`/functions/track-click?dealID=${game.dealID}`);
+
+      // Open the deal in a new tab
       window.open(`https://www.cheapshark.com/redirect?dealID=${game.dealID}`, "_blank");
     });
 
