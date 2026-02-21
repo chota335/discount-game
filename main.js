@@ -12,13 +12,11 @@ async function fetchGames() {
     gamesData = data;
     renderGames();
   } catch (error) {
-    // If loading element exists, show error message
     if (loading) {
       loading.innerText = "데이터 불러오기 실패 😢";
     }
     console.error("Fetch Error:", error);
   } finally {
-    // If loading element exists, hide it
     if (loading) {
       loading.style.display = "none";
     }
@@ -34,11 +32,19 @@ function renderGames() {
     card.className = "game-card";
 
     card.innerHTML = `
-      <img src="${game.thumb}" alt="${game.title}" loading="lazy" />
-      <h3>${game.title}</h3>
-      <div class="price">
-        <div class="discount">${Math.round(game.savings)}% 할인</div>
-        <div>$${game.salePrice}</div>
+      <div class="discount-badge">-${Math.round(game.savings)}%</div>
+      ${game.savings > 70 ? `<div class="aaa-badge">HOT</div>` : ""}
+
+      <img src="${game.thumb.replace("capsule_sm_120", "header")}" alt="${game.title}" />
+
+      <div class="game-info">
+        <div class="game-title">${game.title}</div>
+        <div class="price-row">
+          <div class="sale-price">$${game.salePrice}</div>
+          <div style="text-decoration: line-through; opacity:0.6;">
+            $${game.normalPrice}
+          </div>
+        </div>
       </div>
     `;
 
@@ -50,5 +56,4 @@ function renderGames() {
   });
 }
 
-// Run the script
 fetchGames();
