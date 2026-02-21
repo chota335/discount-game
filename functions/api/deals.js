@@ -1,5 +1,5 @@
 export async function onRequest(context) {
-  const url = "https://www.cheapshark.com/api/1.0/deals?storeID=1&upperPrice=60&pageSize=40";
+  const url = "https://www.cheapshark.com/api/1.0/deals?storeID=1&pageSize=60";
 
   try {
     const response = await fetch(url);

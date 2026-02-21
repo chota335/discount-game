@@ -1,4 +1,4 @@
-const API_URL = "./data.json";
+const API_URL = "/api/deals";
 const exchangeRate = 1300;
 
 let gamesData = [];
@@ -12,8 +12,7 @@ function formatKRW(price) {
 async function fetchGames() {
     showLoading();
     try {
-        // Add cache-busting query parameter
-        const response = await fetch(`${API_URL}?v=${new Date().getTime()}`);
+        const response = await fetch(API_URL);
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
