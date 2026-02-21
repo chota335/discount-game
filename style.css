@@ -17,6 +17,30 @@ h1 {
   font-weight: 700;
 }
 
+#searchInput {
+  margin-top: 20px;
+  padding: 12px 20px;
+  width: 50%;
+  max-width: 400px;
+  border-radius: 30px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background-color: rgba(255, 255, 255, 0.05);
+  color: #e5e7eb;
+  font-size: 1rem;
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+}
+
+#searchInput:focus {
+  outline: none;
+  border-color: rgba(59, 130, 246, 0.7);
+  box-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
+}
+
+#searchInput::placeholder {
+  color: rgba(229, 231, 235, 0.5);
+}
+
 #gamesContainer {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));

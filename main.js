@@ -1,6 +1,7 @@
 const API_URL = "https://www.cheapshark.com/api/1.0/deals?storeID=1&pageSize=40";
 const gamesContainer = document.getElementById("gamesContainer");
 const loading = document.getElementById("loading");
+const searchInput = document.getElementById("searchInput");
 
 let gamesData = [];
 
@@ -10,7 +11,7 @@ async function fetchGames() {
     const data = await response.json();
 
     gamesData = data;
-    renderGames();
+    renderGames(gamesData);
   } catch (error) {
     if (loading) {
       loading.innerText = "데이터 불러오기 실패 😢";
@@ -23,11 +24,16 @@ async function fetchGames() {
   }
 }
 
-function renderGames() {
+function renderGames(games) {
   if (!gamesContainer) return;
   gamesContainer.innerHTML = "";
 
-  gamesData.forEach(game => {
+  if (games.length === 0) {
+      gamesContainer.innerHTML = `<p style="text-align: center; width: 100%;">검색 결과가 없습니다.</p>`;
+      return;
+  }
+
+  games.forEach(game => {
     const card = document.createElement("div");
     card.className = "game-card";
 
@@ -59,5 +65,13 @@ function renderGames() {
     gamesContainer.appendChild(card);
   });
 }
+
+searchInput.addEventListener("input", (e) => {
+  const searchTerm = e.target.value.toLowerCase();
+  const filteredGames = gamesData.filter(game =>
+    game.title.toLowerCase().includes(searchTerm)
+  );
+  renderGames(filteredGames);
+});
 
 fetchGames();
