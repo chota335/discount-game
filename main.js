@@ -1,4 +1,4 @@
-const API_URL = "https://www.cheapshark.com/api/1.0/deals?storeID=1&pageSize=40";
+const API_URL = "https://www.cheapshark.com/api/1.0/deals?storeID=1&pageSize=100&sortBy=Deal Rating";
 const gamesContainer = document.getElementById("gamesContainer");
 const loading = document.getElementById("loading");
 const searchInput = document.getElementById("searchInput");
