@@ -1,49 +1,45 @@
-# Project Blueprint
+# Steam Deals Aggregator Blueprint
 
 ## Overview
 
-This project is a web application that displays a collection of discounted games from Steam. Users can filter the games by category, search for specific games, and view details for each game, with data being fetched from a live API.
+This is a web-based curation service that provides a clean and intuitive interface for discovering the latest Steam game deals. It leverages a server-side API route to fetch and process data from the CheapShark API before presenting it to the user. This architecture simplifies the client-side logic and resolves cross-origin issues.
 
-## Implemented Features
+## Core Architecture: Backend-for-Frontend (BFF)
 
-### Initial Version
-- **UI/UX:**
-  - A simple, dark-themed interface inspired by the Steam store.
-  - Game cards that display the game's image, name, price, and discount.
-  - Category buttons for filtering games.
-- **Functionality:**
-  - Dynamic display of game cards from a JavaScript array.
-  - Filtering of games based on category buttons.
-- **Code Structure:**
-  - Separated HTML, CSS, and JavaScript files.
+The project uses a Backend-for-Frontend pattern by implementing a server-side API route at `/api/deals`. This route acts as a dedicated backend for the client application.
 
-### Search and API Integration
-- **Search Functionality:**
-  - Added a search bar to allow users to search for games by name.
-- **Real-time Data Integration:**
-  - Used the free and legal CheapShark API to fetch real-time game deals.
-- **UI/UX Enhancement:**
-  - Redesigned game cards to be more visually appealing and informative, displaying image, title, original price, discounted price, and discount percentage.
-  - Cards are clickable and lead to the Steam store page.
+-   **Server-Side Data Aggregation (`pages/api/deals.js`)**: 
+    1.  Fetches deals, game details, and genre information from multiple CheapShark API endpoints.
+    2.  Merges this data into a comprehensive data structure.
+    3.  Calculates a `popularityScore` for each game.
+    4.  Sends the processed `games` and `genres` data to the client in a single, optimized response.
 
-### Sorting
-- **Sorting Functionality:**
-  - Added a dropdown menu to sort games by discount, price, or name.
-  - Sorting logic works in conjunction with the search filter.
+-   **Client-Side Fetching (`main.js`)**:
+    1.  Makes a single request to the local `/api/deals` endpoint.
+    2.  Receives the pre-processed data and renders the UI.
+    3.  This eliminates the need for CORS workarounds (like proxies) and simplifies client-side state management.
 
-### Localization
-- **Currency and Language:**
-  - Converted all prices from USD to KRW using a fixed exchange rate.
-  - Ensured all user-facing text is in Korean.
+## Core Features & Design
 
-## Current Plan
+- **Live Data via Server API**: The client fetches all its data from the `/api/deals` route.
+- **Dynamic Genre Filtering**: Users can filter the deal list by genre.
+- **"Lowest Price Ever" Badge**: A "🏆 역대 최저가!" badge highlights games at their historical lowest price.
+- **Curated Sections**: `Ending Soon`, `High Discount`, `Popular Deals`, and `All Games` are rendered based on the data from the server.
+- **Auto-Refresh**: The client re-fetches data from the `/api/deals` endpoint every 60 seconds to keep the deals fresh.
+- **Direct Steam Integration**: Clicking a card opens the Steam store page.
 
-- **Add Genre Information and Optimize Performance:**
-  - **Display Genre:** Modify the game cards to display genre information.
-  - **Performance Optimization:**
-    - The API requires a separate request for each game's genre. To prevent slow loading, all genre requests will be executed in parallel using `Promise.all`.
-    - The enriched game data (including genres) will be constructed by combining results from two different API endpoints.
-  - **Improve User Experience:**
-    - Add a loading spinner to `index.html` that is displayed while the initial data and all genre details are being fetched.
-    - Update `style.css` to style the new genre tags and the loading spinner.
-    - Refactor `main.js` to handle the new, more complex data fetching logic and to display the genres on the game cards.
+## Current Task: Refactor to Server-Side Data Fetching
+
+This task involved a major architectural refactoring from a client-side data fetching model to a Backend-for-Frontend (BFF) model. This was done to fundamentally resolve CORS issues and improve maintainability.
+
+1.  **API Route Creation (`pages/api/deals.js`)**:
+    -   A new serverless function was created to handle all interactions with the external CheapShark API.
+    -   This server-side code is responsible for fetching deals, game details, and genres, then merging them. It also calculates the `popularityScore` for each game, offloading this work from the client.
+
+2.  **Client Refactoring (`main.js`)**:
+    -   Removed all direct calls to the CheapShark API and the CORS proxy URL.
+    -   The `fetchAndPrepareData` function was simplified to make a single call to `/api/deals`.
+    -   The client-side `calculatePopularity` function was removed as this logic now resides on the server.
+    -   The periodic refresh now calls `fetchAndPrepareData` to get a completely new dataset from the server.
+
+3.  **Documentation (`blueprint.md`)**: This document has been rewritten to reflect the new BFF architecture, detailing the responsibilities of the client and the server-side API route.

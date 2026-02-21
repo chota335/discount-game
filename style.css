@@ -1,0 +1,162 @@
+body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background: #0f141a;
+  color: #e6edf3;
+}
+
+header {
+  padding: 30px;
+  text-align: center;
+  background: #161b22;
+}
+
+.logo {
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.subtitle {
+  opacity: 0.7;
+  margin-top: 8px;
+}
+
+.filter-section {
+    padding: 20px 8% 0;
+    text-align: center;
+}
+
+.genre-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+}
+
+.genre-btn {
+    background-color: #2a3b4d;
+    color: #e6edf3;
+    border: 1px solid #445c75;
+    padding: 8px 16px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 14px;
+}
+
+.genre-btn:hover {
+    background-color: #3b5269;
+    border-color: #6380a0;
+}
+
+.genre-btn.active {
+    background-color: #4ea1ff;
+    color: #0f141a;
+    border-color: #4ea1ff;
+    font-weight: bold;
+}
+
+section {
+  padding: 40px 8%;
+}
+
+h2 {
+  margin-bottom: 20px;
+  border-left: 4px solid #4ea1ff;
+  padding-left: 10px;
+}
+
+.game-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 20px;
+}
+
+.game-card {
+  position: relative;
+  border-radius: 14px;
+  overflow: hidden;
+  transition: 0.3s ease;
+  cursor: pointer;
+}
+
+.game-card img {
+  width: 100%;
+  display: block;
+}
+
+.game-card::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  height: 60%;
+  width: 100%;
+  background: linear-gradient(to top, rgba(0,0,0,0.85), transparent);
+  z-index: 1;
+}
+
+.game-card:hover {
+  transform: translateY(-5px);
+}
+
+.game-title {
+  position: absolute;
+  bottom: 65px; /* Adjusted for the new lowest price badge */
+  left: 12px;
+  font-size: 14px;
+  z-index: 2;
+}
+
+.discount-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: #ff4757;
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-weight: bold;
+  font-size: 13px;
+  z-index: 2;
+}
+
+.price-box {
+  position: absolute;
+  bottom: 35px; /* Adjusted for the new lowest price badge */
+  left: 12px;
+  font-size: 13px;
+  z-index: 2;
+}
+
+.original {
+  text-decoration: line-through;
+  opacity: 0.6;
+}
+
+.sale {
+  color: #4ea1ff;
+  font-weight: bold;
+}
+
+.lowest {
+    position: absolute;
+    bottom: 10px;
+    left: 12px;
+    font-size: 12px;
+    font-weight: bold;
+    color: #ffc107;
+    z-index: 2;
+}
+
+.countdown {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background-color: hsla(210, 100%, 65%, 0.85);
+    color: white;
+    padding: 6px 10px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: bold;
+    backdrop-filter: blur(4px);
+    z-index: 3; 
+}

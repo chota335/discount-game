@@ -1,120 +1,44 @@
 <!DOCTYPE html>
-<html>
+<html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <title>Steam Discount Tracker</title>
-  <style>
-    body {
-      background: #1b2838;
-      color: white;
-      font-family: Arial;
-      margin: 0;
-    }
-
-    header {
-      background: #171a21;
-      padding: 15px;
-      text-align: center;
-      font-size: 22px;
-      font-weight: bold;
-    }
-
-    .category-bar {
-      text-align: center;
-      padding: 10px;
-    }
-
-    .category-btn {
-      background: #2a475e;
-      border: none;
-      color: white;
-      padding: 8px 15px;
-      margin: 5px;
-      cursor: pointer;
-    }
-
-    .category-btn:hover {
-      background: #66c0f4;
-      color: black;
-    }
-
-    .game-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      gap: 15px;
-      padding: 20px;
-    }
-
-    .game-card {
-      background: #2a475e;
-      padding: 10px;
-      text-align: center;
-      cursor: pointer;
-      transition: 0.2s;
-    }
-
-    .game-card:hover {
-      transform: scale(1.05);
-      background: #66c0f4;
-      color: black;
-    }
-
-    .game-card img {
-      width: 100%;
-    }
-
-    .discount {
-      color: #00ff7f;
-      font-weight: bold;
-    }
-  </style>
+  <title>스팀 할인 큐레이션 | 오늘의 특가</title>
+  <meta name="description" content="오늘의 스팀 할인 게임, 70% 이상 특가, 인기 게임 자동 정렬">
+  <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
 
-<header>🔥 Steam 할인 게임 모음</header>
+<header>
+  <div class="logo">🔥 STEAM DEALS</div>
+  <div class="subtitle">오늘의 스팀 할인 큐레이션</div>
+</header>
 
-<div class="category-bar">
-  <button class="category-btn" onclick="loadGames('rpg')">RPG</button>
-  <button class="category-btn" onclick="loadGames('strategy')">전략</button>
-  <button class="category-btn" onclick="loadGames('simulation')">시뮬</button>
-  <button class="category-btn" onclick="loadGames('city')">도시건설</button>
-</div>
+<section class="filter-section">
+  <div id="genreFilterContainer" class="genre-filters"></div>
+</section>
 
-<div class="game-grid" id="gameGrid"></div>
+<section id="heroSection"></section>
 
-<script>
-async function loadGames(category) {
-  const grid = document.getElementById("gameGrid");
-  grid.innerHTML = "로딩 중...";
+<section>
+  <h2>⏰ 오늘 종료 예정</h2>
+  <div class="game-grid" id="endingContainer"></div>
+</section>
 
-  const response = await fetch("https://www.cheapshark.com/api/1.0/deals?storeID=1&upperPrice=60&pageSize=20");
-  const data = await response.json();
+<section>
+  <h2>💎 70% 이상 할인</h2>
+  <div class="game-grid" id="highDiscountContainer"></div>
+</section>
 
-  grid.innerHTML = "";
+<section>
+  <h2>⭐ 인기 할인 TOP10</h2>
+  <div class="game-grid" id="popularContainer"></div>
+</section>
 
-  data.forEach(game => {
-    const card = document.createElement("div");
-    card.className = "game-card";
+<section>
+  <h2>🎮 전체 할인 게임</h2>
+  <div class="game-grid" id="gamesContainer"></div>
+</section>
 
-    card.onclick = () => {
-      window.open(`https://store.steampowered.com/app/${game.steamAppID}`, "_blank");
-    };
-
-    card.innerHTML = `
-      <img src="${game.thumb}">
-      <h4>${game.title}</h4>
-      <p class="discount">-${Math.round(game.savings)}%</p>
-      <p>$${game.salePrice}</p>
-    `;
-
-    grid.appendChild(card);
-  });
-}
-
-// 처음 로딩
-loadGames("rpg");
-</script>
-
+<script src="main.js"></script>
 </body>
 </html>
