@@ -38,8 +38,7 @@ async function fetchGames() {
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
-        const data = await response.json();
-        gamesData = data.deals; // Extract the 'deals' array
+        gamesData = await response.json(); // Corrected: data is the array itself
         processAndRenderGames();
     } catch (e) {
         console.error("데이터 불러오기 실패:", e);
