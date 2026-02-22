@@ -1,129 +1,93 @@
 body {
-  margin: 0;
-  font-family: 'Segoe UI', sans-serif;
-  background: linear-gradient(180deg, #0f1722, #111827);
-  color: #e5e7eb;
+  margin:0;
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+  background:#0f1117;
+  color:white;
 }
 
 header {
-  padding: 40px 20px;
-  text-align: center;
-  background: linear-gradient(90deg, #111827, #0f1722);
+  text-align:center;
+  padding:40px 0;
 }
 
-h1 {
-  font-size: 2.5rem;
-  margin: 0;
-  font-weight: 700;
+h2 {
+    text-align: center;
+    padding: 20px 0;
 }
 
-#searchInput {
-  margin-top: 20px;
-  padding: 12px 20px;
-  width: 50%;
-  max-width: 400px;
-  border-radius: 30px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  background-color: rgba(255, 255, 255, 0.05);
-  color: #e5e7eb;
-  font-size: 1rem;
-  backdrop-filter: blur(10px);
-  transition: all 0.3s ease;
+.grid {
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
+  gap:20px;
+  padding:20px 5%;
 }
 
-#searchInput:focus {
-  outline: none;
-  border-color: rgba(59, 130, 246, 0.7);
-  box-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
+.card {
+  background:#1a1d26;
+  border-radius:12px;
+  overflow:hidden;
+  cursor:pointer;
+  transition:0.3s;
 }
 
-#searchInput::placeholder {
-  color: rgba(229, 231, 235, 0.5);
+.card:hover {
+  transform:translateY(-6px);
 }
 
-#gamesContainer {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  gap: 25px;
-  padding: 40px;
-  max-width: 1400px;
-  margin: auto;
+.card img {
+  width:100%;
+  height:120px;
+  object-fit:cover;
 }
 
-.game-card {
-  position: relative;
-  border-radius: 18px;
-  overflow: hidden;
-  background: rgba(255,255,255,0.05);
-  backdrop-filter: blur(10px);
-  box-shadow: 0 10px 25px rgba(0,0,0,0.4);
-  cursor: pointer;
-  transition: all 0.35s ease;
-}
-
-.game-card:hover {
-  transform: translateY(-10px) scale(1.03);
-  box-shadow: 0 20px 40px rgba(0,0,0,0.7);
-}
-
-.game-card img {
-  width: 100%;
-  height: auto;
-  border-bottom: 1px solid rgba(255,255,255,0.1);
-}
-
-.game-info {
-  padding: 15px;
-}
-
-.game-title {
-  font-size: 1.05rem;
-  font-weight: 600;
-  margin-bottom: 10px;
+.card h3 {
+  font-size:14px;
+  padding:10px;
+  margin:0;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.price-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+.price {
+  display:flex;
+  justify-content:space-between;
+  padding:0 10px 10px;
+  font-weight:bold;
 }
 
-.sale-price {
-  font-size: 1.2rem;
-  font-weight: bold;
-  color: #22c55e;
+.discount {
+  color:#ff4d4d;
 }
 
-.discount-badge {
-  position: absolute;
-  top: 15px;
-  left: 15px;
-  background: linear-gradient(90deg, #ef4444, #f97316);
-  padding: 6px 12px;
-  border-radius: 30px;
-  font-size: 0.8rem;
-  font-weight: bold;
-  color: white;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+.sale {
+  color:#00ff99;
 }
 
-.aaa-badge {
-  position: absolute;
-  top: 15px;
-  right: 15px;
-  background: gold;
-  color: black;
-  padding: 5px 10px;
-  font-size: 0.75rem;
-  font-weight: bold;
-  border-radius: 20px;
+.end {
+  font-size:12px;
+  padding:0 10px 10px;
+  color:#ccc;
+}
+
+#genreFilters {
+  text-align:center;
+  padding:20px;
+}
+
+#genreFilters button {
+  margin:5px;
+  padding:8px 14px;
+  border:none;
+  border-radius:20px;
+  background:#2a2f3a;
+  color:white;
+  cursor:pointer;
 }
 
 #loading {
-    text-align: center;
-    padding: 50px;
-    font-size: 1.5rem;
+  text-align: center;
+  font-size: 1.5rem;
+  padding: 50px;
+  display: block;
 }
