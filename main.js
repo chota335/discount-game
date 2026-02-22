@@ -3,6 +3,11 @@ const loading = document.getElementById("loading");
 const searchInput = document.getElementById("searchInput");
 
 let gamesData = [];
+const exchangeRate = 1350; // 대충 환율 (나중에 API로 자동화 가능)
+
+function formatKRW(price) {
+  return "₩" + Math.round(price * exchangeRate).toLocaleString();
+}
 
 async function fetchGames() {
   try {
@@ -56,9 +61,9 @@ function renderGames(games) {
       <div class="game-info">
         <div class="game-title">${game.title}</div>
         <div class="price-row">
-          <div class="sale-price">$${game.salePrice}</div>
+          <div class="sale-price">${formatKRW(game.salePrice)}</div>
           <div style="text-decoration: line-through; opacity:0.6;">
-            $${game.normalPrice}
+            ${formatKRW(game.normalPrice)}
           </div>
         </div>
       </div>
