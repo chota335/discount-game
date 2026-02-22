@@ -1,4 +1,3 @@
-const API_URL = "https://www.cheapshark.com/api/1.0/deals?storeID=1&pageSize=100&sortBy=Deal Rating";
 const gamesContainer = document.getElementById("gamesContainer");
 const loading = document.getElementById("loading");
 const searchInput = document.getElementById("searchInput");
@@ -7,10 +6,17 @@ let gamesData = [];
 
 async function fetchGames() {
   try {
-    const response = await fetch(API_URL);
-    const data = await response.json();
+    let allGames = [];
 
-    gamesData = data;
+    for (let page = 0; page < 3; page++) {
+      const response = await fetch(
+        `https://www.cheapshark.com/api/1.0/deals?storeID=1&pageSize=100&pageNumber=${page}`
+      );
+      const data = await response.json();
+      allGames = allGames.concat(data);
+    }
+
+    gamesData = allGames;
     renderGames(gamesData);
   } catch (error) {
     if (loading) {
