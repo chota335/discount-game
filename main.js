@@ -1,4 +1,4 @@
-const API_URL = "/deals";
+const API_URL = "/api";
 const exchangeRate = 1350;
 
 let gamesData = [];
