@@ -1,39 +1,21 @@
 <!DOCTYPE html>
-<html lang="ko">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>🔥 스팀 할인 게임 모음</title>
-  <link rel="stylesheet" href="style.css" />
-</head>
-<body>
-
-<header>
-  <h1>🔥 오늘의 스팀 할인 게임</h1>
-  <p>자동 업데이트 | 한국 원화 표시</p>
-</header>
-
-<section>
-  <h2>🔥 인기 할인 게임</h2>
-  <div class="games" id="popularContainer"></div>
-</section>
-
-<section>
-  <h2>💎 80% 이상 초특가</h2>
-  <div class="games" id="megaContainer"></div>
-</section>
-
-<section>
-  <h2>💰 1만원 이하 특가</h2>
-  <div class="games" id="cheapContainer"></div>
-</section>
-
-<section>
-  <h2>🎮 전체 할인</h2>
-  <div id="loading">데이터 불러오는 중...</div>
-  <div class="games" id="allContainer"></div>
-</section>
-
-<script src="main.js"></script>
-</body>
+<html>
+  <head>
+    <title>스팀 할인</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script src="main.js"></script>
+  </head>
+  <body>
+    <header>
+      <h1>스팀 세일 정보</h1>
+      <select id="priceFilter">
+        <option value="all">모든 가격</option>
+        <option value="10000">₩10,000 이하</option>
+        <option value="20000">₩20,000 이하</option>
+        <option value="30000">₩30,000 이하</option>
+      </select>
+    </header>
+    <div id="loading">데이터 로딩중...</div>
+    <div id="gamesContainer" class="games-container"></div>
+  </body>
 </html>
