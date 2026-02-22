@@ -1,4 +1,4 @@
-const API_URL = "https://www.cheapshark.com/api/1.0/deals?storeID=1&pageSize=80";
+const API_URL = "/deals";
 const exchangeRate = 1350;
 
 let gamesData = [];
