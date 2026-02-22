@@ -1,92 +1,90 @@
-const gamesContainer = document.getElementById("gamesContainer");
+const API_URL = "https://www.cheapshark.com/api/1.0/deals?storeID=1&pageSize=60";
+const exchangeRate = 1350;
+
+const popularContainer = document.getElementById("popularContainer");
+const megaContainer = document.getElementById("megaContainer");
+const cheapContainer = document.getElementById("cheapContainer");
+const allContainer = document.getElementById("allContainer");
 const loading = document.getElementById("loading");
-const searchInput = document.getElementById("searchInput");
 
 let gamesData = [];
-const exchangeRate = 1350; // 대충 환율 (나중에 API로 자동화 가능)
 
 function formatKRW(price) {
   return "₩" + Math.round(price * exchangeRate).toLocaleString();
 }
 
+function isPopular(game) {
+  return (
+    Number(game.steamRatingCount) > 5000 &&
+    Number(game.steamRatingPercent) > 85
+  );
+}
+
+function createCard(game) {
+  const card = document.createElement("div");
+  card.className = "game-card";
+
+  card.innerHTML = `
+    <img src="${game.thumb}" alt="${game.title}">
+    <div class="card-body">
+      <h3>${game.title}</h3>
+      <div class="price">
+        <div class="discount">${Math.round(game.savings)}% 할인</div>
+        <div>${formatKRW(game.salePrice)}</div>
+      </div>
+    </div>
+  `;
+
+  card.addEventListener("click", () => {
+    window.open(
+      `https://store.steampowered.com/app/${game.steamAppID}/?l=koreana`,
+      "_blank"
+    );
+  });
+
+  return card;
+}
+
 async function fetchGames() {
   try {
-    let allGames = [];
+    const response = await fetch(API_URL);
+    const data = await response.json();
+    gamesData = data;
 
-    for (let page = 0; page < 3; page++) {
-      const response = await fetch(
-        `https://www.cheapshark.com/api/1.0/deals?storeID=1&pageSize=100&pageNumber=${page}`
-      );
-      const data = await response.json();
-      allGames = allGames.concat(data);
-    }
-
-    gamesData = allGames;
-    renderGames(gamesData);
-  } catch (error) {
-    if (loading) {
-      loading.innerText = "데이터 불러오기 실패 😢";
-    }
-    console.error("Fetch Error:", error);
+    renderSections();
+  } catch (err) {
+    loading.innerText = "데이터 불러오기 실패 😢";
   } finally {
-    if (loading) {
-      loading.style.display = "none";
-    }
+    loading.style.display = "none";
   }
 }
 
-function renderGames(games) {
-  if (!gamesContainer) return;
-  gamesContainer.innerHTML = "";
+function renderSections() {
+  popularContainer.innerHTML = "";
+  megaContainer.innerHTML = "";
+  cheapContainer.innerHTML = "";
+  allContainer.innerHTML = "";
 
-  if (games.length === 0) {
-      gamesContainer.innerHTML = `<p style="text-align: center; width: 100%;">검색 결과가 없습니다.</p>`;
-      return;
-  }
+  gamesData.forEach(game => {
+    const card = createCard(game);
 
-  games.forEach(game => {
-    const card = document.createElement("div");
-    card.className = "game-card";
+    // 인기
+    if (isPopular(game)) {
+      popularContainer.appendChild(card.cloneNode(true));
+    }
 
-    let imageUrl = game.steamAppID
-      ? `https://cdn.cloudflare.steamstatic.com/steam/apps/${game.steamAppID}/header.jpg`
-      : game.thumb;
+    // 80% 이상
+    if (Number(game.savings) >= 80) {
+      megaContainer.appendChild(card.cloneNode(true));
+    }
 
-    card.innerHTML = `
-      <div class="discount-badge">-${Math.round(game.savings)}%</div>
-      ${game.savings > 70 ? `<div class="aaa-badge">HOT</div>` : ""}
+    // 1만원 이하
+    if (Number(game.salePrice) * exchangeRate <= 10000) {
+      cheapContainer.appendChild(card.cloneNode(true));
+    }
 
-      <img src="${imageUrl}" alt="${game.title}" />
-
-      <div class="game-info">
-        <div class="game-title">${game.title}</div>
-        <div class="price-row">
-          <div class="sale-price">${formatKRW(game.salePrice)}</div>
-          <div style="text-decoration: line-through; opacity:0.6;">
-            ${formatKRW(game.normalPrice)}
-          </div>
-        </div>
-      </div>
-    `;
-
-    card.addEventListener("click", () => {
-      // Track the click in the background
-      fetch(`/functions/track-click?dealID=${game.dealID}`);
-
-      // Open the deal in a new tab
-      window.open(`https://www.cheapshark.com/redirect?dealID=${game.dealID}`, "_blank");
-    });
-
-    gamesContainer.appendChild(card);
+    allContainer.appendChild(card);
   });
 }
-
-searchInput.addEventListener("input", (e) => {
-  const searchTerm = e.target.value.toLowerCase();
-  const filteredGames = gamesData.filter(game =>
-    game.title.toLowerCase().includes(searchTerm)
-  );
-  renderGames(filteredGames);
-});
 
 fetchGames();
