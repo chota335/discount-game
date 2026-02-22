@@ -49,7 +49,7 @@ document.addEventListener("DOMContentLoaded", () => {
       console.error("데이터를 불러오는 중 오류 발생:", e);
       loading.innerText = "데이터 로딩 실패 😢";
     } finally {
-      loading.style.display = "none";
+      if (loading) loading.style.display = "none";
     }
   }
 
