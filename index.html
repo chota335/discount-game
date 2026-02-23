@@ -3,72 +3,72 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>🔥 Discount Game - 오늘의 스팀 할인 게임</title>
-  <meta name="description" content="매일 업데이트되는 스팀 할인 게임 정보를 확인하세요. 인기 AAA 게임부터 1만원 이하의 특가 게임까지, 모든 할인 정보를 한눈에 볼 수 있습니다." />
-  <meta name="keywords" content="스팀 할인, Steam 할인, 스팀 게임, 스팀 세일, 게임 할인, AAA 게임, 할인 정보" />
-  <meta property="og:title" content="🔥 Discount Game - 오늘의 스팀 할인 정보" />
-  <meta property="og:description" content="AAA 게임부터 80% 이상 초특가까지. 매일 업데이트되는 스팀 할인 게임을 확인하고 합리적인 가격에 구매하세요." />
-  <meta property="og:type" content="website" />
+  <title>DiscountDealGame - 오늘의 스팀 할인 게임</title>
+
+  <meta name="description" content="AAA 인기 게임부터 80% 이상 초특가까지. 매일 자동 업데이트되는 스팀 할인 게임 정보를 한국 원화 기준으로 제공합니다.">
+  <meta name="keywords" content="스팀 할인, Steam 할인 게임, 스팀 특가, AAA 할인, 게임 할인 정보">
+  <meta property="og:title" content="DiscountDealGame - 오늘의 스팀 할인 정보">
+  <meta property="og:description" content="매일 업데이트되는 스팀 할인 게임을 한눈에 확인하세요.">
+  <meta property="og:type" content="website">
+
   <link rel="stylesheet" href="style.css"/>
+
+  <!-- Google AdSense -->
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8907006898690368"
-     crossorigin="anonymous"></script>
+    crossorigin="anonymous"></script>
   <meta name="google-adsense-account" content="ca-pub-8907006898690368">
 </head>
 <body>
 
 <nav class="navbar">
-  <div class="logo">
-    <a href="/">🔥 Discount Game</a>
-  </div>
+  <div class="logo"><a href="/">🎮 DiscountDealGame</a></div>
   <ul class="nav-links">
     <li><a href="/">홈</a></li>
+    <li><a href="/guide.html">세일 가이드</a></li>
     <li><a href="/about.html">About</a></li>
     <li><a href="/privacy.html">개인정보처리방침</a></li>
   </ul>
 </nav>
 
-<header>
-  <h1>오늘의 스팀 할인 게임</h1>
+<header class="hero">
+  <h1>🔥 오늘의 스팀 할인 게임</h1>
   <p>매일 자동 업데이트 | 한국 원화(KRW) 표시</p>
 </header>
 
 <section class="intro">
   <h2>스팀 할인 게임을 한눈에 확인하세요</h2>
   <p>
-    Discount Game은 매일 자동으로 업데이트되는 스팀 할인 추적 사이트입니다.
+    DiscountDealGame은 매일 자동으로 업데이트되는 스팀 할인 추적 사이트입니다.
     AAA 인기 게임, 80% 이상 초특가, 1만원 이하 가성비 게임을
     한국 원화 기준으로 정리하여 제공합니다.
-  </p>
-  <p>
-    할인 종료 임박 게임과 평점이 높은 인기작을 빠르게 확인하고,
-    합리적인 가격에 게임을 구매하세요.
   </p>
 </section>
 
 <section id="genreFilters"></section>
 
-<section id="sections">
-  <h2>🔥 인기 AAA 할인</h2>
-  <div id="aaaContainer" class="grid"></div>
+<h2 class="section-title">🔥 인기 AAA 할인</h2>
+<div id="aaaContainer" class="grid"></div>
 
-  <h2>🎮 전체 할인 게임</h2>
-  <div id="gamesContainer" class="grid"></div>
-</section>
+<h2 class="section-title">💎 80% 이상 초특가</h2>
+<div id="highDiscountContainer" class="grid"></div>
+
+<h2 class="section-title">🎮 전체 할인 게임</h2>
+<div id="gamesContainer" class="grid"></div>
 
 <div id="loading">데이터를 불러오는 중입니다...</div>
 
 <footer class="footer">
   <div class="footer-links">
     <a href="/">홈</a> |
+    <a href="/guide.html">세일 가이드</a> |
     <a href="/about.html">About</a> |
     <a href="/privacy.html">개인정보처리방침</a>
   </div>
   <p>
-    본 사이트는 Steam 및 CheapShark API 데이터를 기반으로
-    할인 정보를 제공하는 정보 제공 사이트입니다.
+    본 사이트는 Steam 할인 정보를 제공하는 정보 제공 사이트입니다.
     일부 링크는 제휴 링크를 포함할 수 있습니다.
   </p>
-  <p>© 2024 Discount Game. All rights reserved.</p>
+  <p>© 2024 DiscountDealGame. All rights reserved.</p>
 </footer>
 
 <script src="main.js"></script>
