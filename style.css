@@ -1,9 +1,45 @@
+
 body {
   margin:0;
   font-family: -apple-system, BlinkMacSystemFont, sans-serif;
   background:#0f1117;
   color:white;
 }
+
+/* Navigation Bar */
+.navbar {
+  background-color: #1a1d26;
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.navbar .logo a {
+  color: #fff;
+  font-weight: bold;
+  text-decoration: none;
+  font-size: 1.2rem;
+}
+
+.navbar .nav-links {
+  list-style: none;
+  display: flex;
+  margin: 0;
+  padding: 0;
+  gap: 1.5rem;
+}
+
+.navbar .nav-links a {
+  color: #e5e7eb;
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+.navbar .nav-links a:hover {
+  color: #60a5fa;
+}
+
 
 header {
   text-align:center;
