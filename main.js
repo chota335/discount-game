@@ -1,130 +1,83 @@
-const exchangeRate = 1300;
-const API_BASE = "https://www.cheapshark.com/api/1.0/deals";
+document.addEventListener("DOMContentLoaded", () => {
+  const exchangeRate = 1300;
+  const gamesContainer = document.getElementById("gamesContainer");
+  const aaaContainer = document.getElementById("aaaContainer");
+  const highDiscountContainer = document.getElementById("highDiscountContainer");
+  const loading = document.getElementById("loading");
+  const genreFilters = document.getElementById("genreFilters");
 
-const pages = [0,1,2,3,4]; // 500개
-
-let gamesData = [];
-let selectedGenre = null;
-
-const gamesContainer = document.getElementById("gamesContainer");
-const aaaContainer = document.getElementById("aaaContainer");
-const loading = document.getElementById("loading");
-const genreFilters = document.getElementById("genreFilters");
-
-function formatKRW(price) {
-  return "₩" + Math.round(price * exchangeRate).toLocaleString();
-}
-
-function getEndDate(timestamp) {
-  if (!timestamp) return "";
-  const date = new Date(timestamp * 1000);
-  return `${date.getMonth()+1}/${date.getDate()} 종료`;
-}
-
-async function fetchDeals() {
-  try {
-    const requests = pages.map(page =>
-      fetch(`${API_BASE}?storeID=1&pageSize=100&pageNumber=${page}`)
-        .then(res => res.json())
-    );
-
-    const results = await Promise.all(requests);
-    gamesData = results.flat();
-
-    renderAAA();
-    renderGenres();
-    renderGames();
-
-  } catch (err) {
-    loading.innerText = "데이터 불러오기 실패 😢";
-    console.error(err);
-  } finally {
-    loading.style.display = "none";
-  }
-}
-
-function isAAA(game) {
-  return (
-    game.steamRatingCount > 20000 &&
-    game.steamRatingPercent > 85 &&
-    game.metacriticScore > 80
-  );
-}
-
-function renderAAA() {
-  const aaaGames = gamesData.filter(isAAA).slice(0,20);
-  aaaContainer.innerHTML = "";
-  aaaGames.forEach(game => {
-    aaaContainer.appendChild(createCard(game));
-  });
-}
-
-function renderGenres() {
-  const genreSet = new Set();
-
-  gamesData.forEach(game => {
-    if (game.steamRatingText) {
-      genreSet.add(game.steamRatingText);
+  async function fetchGames() {
+    try {
+      const response = await fetch("/functions/genres/all", {
+        headers: {
+          'Accept': 'application/json'
+        }
+      });
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const allGames = await response.json();
+      displayGames(allGames);
+      populateGenreFilters(allGames);
+      loading.style.display = "none";
+    } catch (error) {
+      console.error("Error fetching games:", error);
+      if (loading) loading.innerHTML = "데이터를 불러오는 데 실패했습니다.";
     }
-  });
-
-  genreFilters.innerHTML = "";
-
-  const allBtn = document.createElement("button");
-  allBtn.innerText = "전체";
-  allBtn.onclick = () => {
-    selectedGenre = null;
-    renderGames();
-  };
-  genreFilters.appendChild(allBtn);
-
-  genreSet.forEach(genre => {
-    const btn = document.createElement("button");
-    btn.innerText = genre;
-    btn.onclick = () => {
-      selectedGenre = genre;
-      renderGames();
-    };
-    genreFilters.appendChild(btn);
-  });
-}
-
-function renderGames() {
-  gamesContainer.innerHTML = "";
-
-  let filtered = gamesData;
-
-  if (selectedGenre) {
-    filtered = gamesData.filter(g => g.steamRatingText === selectedGenre);
   }
 
-  filtered.slice(0,500).forEach(game => {
-    gamesContainer.appendChild(createCard(game));
-  });
-}
+  function displayGames(games) {
+    const aaaGames = games.filter(game => game.metacriticScore >= 80).slice(0, 10);
+    const highDiscountGames = games.filter(game => parseFloat(game.savings) >= 80).slice(0, 10);
 
-function createCard(game) {
-  const card = document.createElement("div");
-  card.className = "card";
+    renderGames(aaaContainer, aaaGames);
+    renderGames(highDiscountContainer, highDiscountGames);
+    renderGames(gamesContainer, games.slice(0, 50)); 
+  }
 
-  card.innerHTML = `
-    <img src="${game.thumb}" />
-    <h3>${game.title}</h3>
-    <div class="price">
-      <span class="discount">${Math.round(game.savings)}%</span>
-      <span class="sale">${formatKRW(game.salePrice)}</span>
-    </div>
-    <div class="end">${getEndDate(game.lastChange)}</div>
-  `;
+  function renderGames(container, games) {
+    if (!container || !games) return;
+    container.innerHTML = games.map(game => {
+      const priceKRW = Math.round(parseFloat(game.salePrice) * exchangeRate);
+      return `
+        <div class="game-card">
+          <a href="https://www.cheapshark.com/redirect?dealID=${game.dealID}" target="_blank">
+            <img src="${game.thumb}" alt="${game.title}" />
+            <h3>${game.title}</h3>
+            <div class="price">
+              <span class="discount">${Math.round(game.savings)}% 할인</span>
+              <span class="krw">${priceKRW.toLocaleString()}원</span>
+            </div>
+          </a>
+        </div>
+      `;
+    }).join("");
+  }
 
-  card.onclick = () => {
-    window.open(
-      `https://www.cheapshark.com/redirect?dealID=${game.dealID}`,
-      "_blank"
-    );
-  };
+  function populateGenreFilters(games) {
+    if (!genreFilters) return;
+    const genres = ['rpg', 'action', 'fps', 'strategy', 'horror', 'casual'];
+    const genreEmojis = {
+      rpg: '🧙',
+      action: '🎯',
+      fps: '🔫',
+      strategy: '🧠',
+      horror: '👻',
+      casual: '🎮'
+    };
 
-  return card;
-}
+    let filtersHTML = genres.map(genre => {
+      const emoji = genreEmojis[genre] || '👾';
+      return `<a href="/genres/${genre}" class="genre-card">${emoji} ${genre.toUpperCase()}</a>`;
+    }).join('');
+    
+    // Add a highlight card for AAA games
+    filtersHTML += `<a href="/genres/aaa" class="genre-card highlight">🔥 인기 AAA</a>`;
 
-fetchDeals();
+    genreFilters.innerHTML = filtersHTML;
+  }
+
+  if(document.getElementById('gamesContainer')) {
+    fetchGames();
+  }
+});
