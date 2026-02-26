@@ -4,7 +4,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const aaaContainer = document.getElementById("aaaContainer");
   const highDiscountContainer = document.getElementById("highDiscountContainer");
   const loading = document.getElementById("loading");
-  const genreFilters = document.getElementById("genreFilters");
 
   async function fetchGames() {
     try {
@@ -18,7 +17,6 @@ document.addEventListener("DOMContentLoaded", () => {
       }
       const allGames = await response.json();
       displayGames(allGames);
-      populateGenreFilters(allGames);
       loading.style.display = "none";
     } catch (error) {
       console.error("Error fetching games:", error);
@@ -52,29 +50,6 @@ document.addEventListener("DOMContentLoaded", () => {
         </div>
       `;
     }).join("");
-  }
-
-  function populateGenreFilters(games) {
-    if (!genreFilters) return;
-    const genres = ['rpg', 'action', 'fps', 'strategy', 'horror', 'casual'];
-    const genreEmojis = {
-      rpg: '🧙',
-      action: '🎯',
-      fps: '🔫',
-      strategy: '🧠',
-      horror: '👻',
-      casual: '🎮'
-    };
-
-    let filtersHTML = genres.map(genre => {
-      const emoji = genreEmojis[genre] || '👾';
-      return `<a href="/genres/${genre}" class="genre-card">${emoji} ${genre.toUpperCase()}</a>`;
-    }).join('');
-    
-    // Add a highlight card for AAA games
-    filtersHTML += `<a href="/genres/aaa" class="genre-card highlight">🔥 인기 AAA</a>`;
-
-    genreFilters.innerHTML = filtersHTML;
   }
 
   if(document.getElementById('gamesContainer')) {
