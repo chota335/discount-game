@@ -1,5 +1,6 @@
 /**
  * Advanced Cloudflare Pages Function for DiscountDealGame.
+ * API Endpoint: /api/deals
  * - Fetches deals from the CheapShark API based on genre.
  * - Maps simple genre names to CheapShark genre IDs.
  * - Caches API responses server-side for performance and rate-limiting.
@@ -10,6 +11,7 @@
 const API_BASE_URL = "https://www.cheapshark.com/api/1.0";
 const CACHE_TTL_SECONDS = 900; // 15 minutes
 
+// Maps URL-friendly genre IDs to CheapShark's numerical genre IDs
 const genreIdMap = {
     'action': '2',
     'indie': '23',
@@ -35,7 +37,7 @@ async function fetchAndCacheDeals(genreId, context) {
     let response = await cache.match(cacheKey);
 
     if (!response) {
-        console.log(`Cache miss for ${genreId || 'all'.toUpperCase()}. Fetching from API.`);
+        console.log(`Cache miss for genre ID: ${genreId || 'all'}. Fetching from API.`);
         response = await fetch(url);
         if(response.ok) {
              context.waitUntil(cache.put(cacheKey, response.clone()));
@@ -49,7 +51,6 @@ async function fetchAndCacheDeals(genreId, context) {
 }
 
 function sortDeals(deals, sortBy) {
-    // Create a mutable copy for sorting
     const sortedDeals = [...deals]; 
 
     switch (sortBy) {
@@ -73,10 +74,11 @@ function sortDeals(deals, sortBy) {
 export async function onRequest(context) {
     try {
         const url = new URL(context.request.url);
-        const genre = url.searchParams.get('genre') || 'all';
+        // ✅ Changed parameter from 'genre' to 'g' as requested
+        const genre = url.searchParams.get('g') || 'action'; // Default to action
         const sortBy = url.searchParams.get('sort') || 'savings';
 
-        const genreId = genre === 'all' ? null : genreIdMap[genre];
+        const genreId = genreIdMap[genre];
 
         const rawDeals = await fetchAndCacheDeals(genreId, context);
         const sortedDeals = sortDeals(rawDeals, sortBy);
