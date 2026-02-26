@@ -1,45 +1,26 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Steam Deals</title>
-    <link rel="stylesheet" href="styles.css">
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3862213134500127" crossorigin="anonymous"></script>
+  <meta charset="UTF-8">
+  <title>🔥 스팀 할인 | 장르별 게임 추천</title>
+  <meta name="description" content="스팀(Steam) 실시간 할인 정보를 장르별로 확인하고, 최고의 게임을 가장 저렴한 가격에 만나보세요.">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <header>
-        <h1>🎮 DiscountDealGame</h1>
-        <nav>
-            <button id="all-btn" class="active">All Deals</button>
-            <button id="metacritic-btn">Top Rated</button>
-            <button id="reviews-btn">Most Reviewed</button>
-            <button id="aaa-btn">AAA Games</button>
-        </nav>
-    </header>
 
-    <main id="deals-container"></main>
+<header>
+  <h1>🔥 스팀 할인: 장르별 게임</h1>
+  <p>원하는 장르를 선택하여 최고의 할인 상품을 찾아보세요.</p>
+</header>
 
-    <footer>
-        <div class="footer-links">
-            <a href="#" id="about-link">About</a> |
-            <a href="#" id="privacy-link">개인정보처리방침</a>
-        </div>
-        <p>© 2024 DiscountDealGame. All rights reserved.</p>
-    </footer>
+<main id="genreGrid" class="genre-grid container"></main>
+<div id="loading" class="loading">장르 목록을 불러오는 중...</div>
 
-    <div id="cookie-consent-banner">
-        <p>본 사이트는 사용자 경험 개선 및 맞춤형 광고 제공을 위해 쿠키를 사용합니다. <a href="#" id="privacy-link-banner">개인정보처리방침</a>을 확인하세요.</p>
-        <button id="consent-button">동의</button>
-    </div>
+<footer>
+    <p>© 2024 DiscountDealGame. 모든 권리 보유.</p>
+</footer>
 
-    <div id="modal-overlay">
-        <div id="modal-content">
-            <button id="modal-close-button">&times;</button>
-            <div id="modal-body"></div>
-        </div>
-    </div>
-
-    <script src="main.js"></script>
+<script src="main.js"></script>
 </body>
 </html>

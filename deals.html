@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>스팀 할인 정보</title> <!-- Title will be updated by JS -->
+    <meta name="description" content="선택한 장르의 스팀 게임 할인 정보를 실시간으로 확인하세요.">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo"><a href="/">🎮 DiscountDealGame</a></div>
+        <ul class="nav-links">
+            <li><a href="/">홈 (장르 선택)</a></li>
+        </ul>
+    </nav>
+
+    <header class="page-header container">
+        <h1 id="deals-page-title">할인 정보 로딩 중...</h1>
+        <div class="filter-nav">
+            <button id="savings-btn" class="active">할인율순</button>
+            <button id="price-btn">가격순</button>
+            <button id="metacritic-btn">평점순</button>
+            <button id="reviews-btn">리뷰순</button>
+        </div>
+    </header>
+
+    <main id="deals-container" class="container"></main>
+    <div id="loading" class="loading">최고의 할인 정보를 찾고 있습니다...</div>
+
+    <footer>
+        <p>© 2024 DiscountDealGame. 모든 권리 보유.</p>
+    </footer>
+
+    <script src="deals.js"></script>
+</body>
+</html>
