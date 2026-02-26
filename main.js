@@ -30,9 +30,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                     <div class="genre-emoji">${genre.emoji}</div>
                     <div class="genre-name">${genre.name}</div>
                 `;
-                // ✅ Updated to navigate to the generic deals page
+                // ✅ Corrected to point to genre.html with 'g' parameter
                 card.addEventListener("click", () => {
-                    window.location.href = `deals.html`;
+                    window.location.href = `genre.html?g=${genre.id}`;
                 });
                 genreGrid.appendChild(card);
             });
@@ -43,17 +43,31 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-    // --- Deals Page Logic (Simplified) ---
+    // --- Deals Page Logic: Load Genres and Deals ---
     async function loadDealsPage() {
-        if (pageHeader) pageHeader.textContent = '현재 할인 중인 게임';
-        if (filterNav) filterNav.style.display = 'none'; // Hide unused filter bar
+        const urlParams = new URLSearchParams(window.location.search);
+        const genreId = urlParams.get('g') || 'action'; // Default to action if no genre is specified
+
         if (loading) loading.style.display = 'block';
 
         try {
-            // ✅ Simplified to fetch from the /deals endpoint
-            const response = await fetch('/deals');
-            if (!response.ok) throw new Error('할인 데이터를 불러오지 못했습니다.');
-            const deals = await response.json();
+            const [genresResponse, dealsResponse] = await Promise.all([
+                fetch('/genres'),
+                fetch(`/api/deals?g=${genreId}`)
+            ]);
+
+            if (!genresResponse.ok) throw new Error('장르 데이터를 불러오지 못했습니다.');
+            if (!dealsResponse.ok) throw new Error('할인 데이터를 불러오지 못했습니다.');
+
+            const genres = await genresResponse.json();
+            const deals = await dealsResponse.json();
+
+            const currentGenre = genres.find(g => g.id === genreId);
+            if (pageHeader && currentGenre) {
+                pageHeader.textContent = `${currentGenre.emoji} ${currentGenre.name} 게임 할인`;
+            }
+            
+            renderGenreFilters(genres, genreId);
 
             if (loading) loading.style.display = 'none';
             renderDeals(deals);
@@ -64,7 +78,22 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-    // --- Function to Render Deal Cards ---
+    // --- Render Genre Filter Buttons ---
+    function renderGenreFilters(genres, activeGenreId) {
+        if (!filterNav) return;
+        filterNav.innerHTML = ''; 
+        genres.forEach(genre => {
+            const button = document.createElement('button');
+            button.textContent = genre.name;
+            button.className = (genre.id === activeGenreId) ? 'active' : '';
+            button.onclick = () => {
+                window.location.href = `genre.html?g=${genre.id}`;
+            };
+            filterNav.appendChild(button);
+        });
+    }
+
+    // --- Render Deal Cards ---
     function renderDeals(deals) {
         if (!dealsContainer) return;
         dealsContainer.innerHTML = '';
