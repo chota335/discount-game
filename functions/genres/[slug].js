@@ -5,10 +5,19 @@ export async function onRequest(context) {
   const cached = await env.GAME_CACHE.get("all_games");
 
   if (!cached) {
-    return new Response("Cache empty. Run /api/refresh first.");
+    return new Response(JSON.stringify({ error: "Cache empty. Run /api/refresh first." }), {
+      status: 500,
+      headers: { "Content-Type": "application/json;charset=UTF-8" }
+    });
   }
 
   const games = JSON.parse(cached);
+
+  if (slug === 'all') {
+    return new Response(JSON.stringify(games), {
+      headers: { 'Content-Type': 'application/json;charset=UTF-8' }
+    });
+  }
 
   const filtered = games.filter(game =>
     game.genres.includes(slug)
