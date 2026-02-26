@@ -30,9 +30,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                     <div class="genre-emoji">${genre.emoji}</div>
                     <div class="genre-name">${genre.name}</div>
                 `;
-                // ✅ Changed to event listener and updated URL parameter to 'g'
+                // ✅ Updated to navigate to the generic deals page
                 card.addEventListener("click", () => {
-                    window.location.href = `deals.html?g=${genre.id}`;
+                    window.location.href = `deals.html`;
                 });
                 genreGrid.appendChild(card);
             });
@@ -43,33 +43,17 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-    // --- Deals Page Logic: Load Genres and Deals ---
+    // --- Deals Page Logic (Simplified) ---
     async function loadDealsPage() {
-        // ✅ Changed to read 'g' parameter
-        const urlParams = new URLSearchParams(window.location.search);
-        const genreId = urlParams.get('g') || 'action';
-
+        if (pageHeader) pageHeader.textContent = '현재 할인 중인 게임';
+        if (filterNav) filterNav.style.display = 'none'; // Hide unused filter bar
         if (loading) loading.style.display = 'block';
 
         try {
-            // ✅ Updated API endpoint to /api/deals and parameter to 'g'
-            const [genresResponse, dealsResponse] = await Promise.all([
-                fetch('/genres'),
-                fetch(`/api/deals?g=${genreId}`)
-            ]);
-
-            if (!genresResponse.ok) throw new Error('장르 데이터를 불러오지 못했습니다.');
-            if (!dealsResponse.ok) throw new Error('할인 데이터를 불러오지 못했습니다.');
-
-            const genres = await genresResponse.json();
-            const deals = await dealsResponse.json();
-
-            const currentGenre = genres.find(g => g.id === genreId);
-            if (pageHeader && currentGenre) {
-                pageHeader.textContent = `${currentGenre.emoji} ${currentGenre.name} 게임 할인`;
-            }
-            
-            renderGenreFilters(genres, genreId);
+            // ✅ Simplified to fetch from the /deals endpoint
+            const response = await fetch('/deals');
+            if (!response.ok) throw new Error('할인 데이터를 불러오지 못했습니다.');
+            const deals = await response.json();
 
             if (loading) loading.style.display = 'none';
             renderDeals(deals);
@@ -80,23 +64,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-    // --- 📄 Refactored Function: Render Genre Filters ---
-    function renderGenreFilters(genres, activeGenreId) {
-        if (!filterNav) return;
-        filterNav.innerHTML = ''; 
-        genres.forEach(genre => {
-            const button = document.createElement('button');
-            button.textContent = genre.name;
-            button.className = (genre.id === activeGenreId) ? 'active' : '';
-            // ✅ Updated URL parameter to 'g'
-            button.onclick = () => {
-                window.location.href = `deals.html?g=${genre.id}`;
-            };
-            filterNav.appendChild(button);
-        });
-    }
-
-    // --- 📄 Refactored Function: Render Deal Cards ---
+    // --- Function to Render Deal Cards ---
     function renderDeals(deals) {
         if (!dealsContainer) return;
         dealsContainer.innerHTML = '';
