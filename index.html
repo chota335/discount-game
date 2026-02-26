@@ -1,14 +1,15 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Steam Deals</title>
-    <link rel="stylesheet" href="/styles.css">
+    <link rel="stylesheet" href="styles.css">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3862213134500127" crossorigin="anonymous"></script>
 </head>
 <body>
     <header>
-        <h1>Steam Deals</h1>
+        <h1>🎮 DiscountDealGame</h1>
         <nav>
             <button id="all-btn" class="active">All Deals</button>
             <button id="metacritic-btn">Top Rated</button>
@@ -16,9 +17,29 @@
             <button id="aaa-btn">AAA Games</button>
         </nav>
     </header>
-    <main id="deals-container">
-        
-    </main>
-    <script src="/main.js"></script>
+
+    <main id="deals-container"></main>
+
+    <footer>
+        <div class="footer-links">
+            <a href="#" id="about-link">About</a> |
+            <a href="#" id="privacy-link">개인정보처리방침</a>
+        </div>
+        <p>© 2024 DiscountDealGame. All rights reserved.</p>
+    </footer>
+
+    <div id="cookie-consent-banner">
+        <p>본 사이트는 사용자 경험 개선 및 맞춤형 광고 제공을 위해 쿠키를 사용합니다. <a href="#" id="privacy-link-banner">개인정보처리방침</a>을 확인하세요.</p>
+        <button id="consent-button">동의</button>
+    </div>
+
+    <div id="modal-overlay">
+        <div id="modal-content">
+            <button id="modal-close-button">&times;</button>
+            <div id="modal-body"></div>
+        </div>
+    </div>
+
+    <script src="main.js"></script>
 </body>
 </html>
