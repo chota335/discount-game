@@ -1,58 +1,63 @@
-document.addEventListener("DOMContentLoaded", () => {
-  const exchangeRate = 1300;
-  const gamesContainer = document.getElementById("gamesContainer");
-  const aaaContainer = document.getElementById("aaaContainer");
-  const highDiscountContainer = document.getElementById("highDiscountContainer");
-  const loading = document.getElementById("loading");
+document.addEventListener('DOMContentLoaded', () => {
+    const dealsContainer = document.getElementById('deals-container');
+    const navButtons = document.querySelectorAll('nav button');
+    let activeCategory = 'all';
 
-  async function fetchGames() {
-    try {
-      const response = await fetch("/genres/all", {
-        headers: {
-          'Accept': 'application/json'
+    async function fetchGames(category) {
+        dealsContainer.innerHTML = ''; // Clear existing deals
+        try {
+            const response = await fetch(`/api/deals/${category}`);
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            const games = await response.json();
+            displayGames(games);
+        } catch (error) {
+            console.error("Error fetching games:", error);
+            dealsContainer.innerHTML = `<p class="error">Failed to load deals. Please try again later.</p>`;
         }
-      });
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      const allGames = await response.json();
-      displayGames(allGames);
-      loading.style.display = "none";
-    } catch (error) {
-      console.error("Error fetching games:", error);
-      if (loading) loading.innerHTML = "데이터를 불러오는 데 실패했습니다.";
     }
-  }
 
-  function displayGames(games) {
-    const aaaGames = games.filter(game => game.metacriticScore >= 80).slice(0, 20);
-    const highDiscountGames = games.filter(game => parseFloat(game.savings) >= 80).slice(0, 20);
+    function displayGames(games) {
+        if (!games || games.length === 0) {
+            dealsContainer.innerHTML = '<p>No deals found for this category.</p>';
+            return;
+        }
 
-    renderGames(aaaContainer, aaaGames);
-    renderGames(highDiscountContainer, highDiscountGames);
-    renderGames(gamesContainer, games.slice(0, 100)); 
-  }
+        games.forEach(game => {
+            const gameCard = document.createElement('div');
+            gameCard.className = 'deal-card';
+            gameCard.onclick = () => window.open(`https://store.steampowered.com/app/${game.steamAppID}/?l=koreana`, '_blank');
 
-  function renderGames(container, games) {
-    if (!container || !games) return;
-    container.innerHTML = games.map(game => {
-      const priceKRW = Math.round(parseFloat(game.salePrice) * exchangeRate);
-      return `
-        <div class="game-card">
-          <a href="https://www.cheapshark.com/redirect?dealID=${game.dealID}" target="_blank">
-            <img src="${game.thumb}" alt="${game.title}" />
-            <h3>${game.title}</h3>
-            <div class="price">
-              <span class="discount">${Math.round(game.savings)}% 할인</span>
-              <span class="krw">${priceKRW.toLocaleString()}원</span>
-            </div>
-          </a>
-        </div>
-      `;
-    }).join("");
-  }
+            const discountPercent = Math.round(parseFloat(game.savings));
 
-  if(document.getElementById('gamesContainer')) {
-    fetchGames();
-  }
+            gameCard.innerHTML = `
+                <img src="${game.thumb}" alt="${game.title}">
+                <div class="deal-info">
+                    <div class="deal-title">${game.title}</div>
+                    <div class="deal-prices">
+                        <span class="original-price">$${game.normalPrice}</span>
+                        <span class="sale-price">$${game.salePrice}</span>
+                    </div>
+                    <div class="deal-savings">-${discountPercent}%</div>
+                </div>
+            `;
+            dealsContainer.appendChild(gameCard);
+        });
+    }
+
+    function handleNavClick(e) {
+        const newCategory = e.target.id.replace('-btn', '');
+        if (newCategory !== activeCategory) {
+            activeCategory = newCategory;
+            navButtons.forEach(btn => btn.classList.remove('active'));
+            e.target.classList.add('active');
+            fetchGames(activeCategory);
+        }
+    }
+
+    navButtons.forEach(button => button.addEventListener('click', handleNavClick));
+
+    // Initial fetch
+    fetchGames(activeCategory);
 });
