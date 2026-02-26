@@ -10,7 +10,7 @@ export async function onRequest(context) {
         { id: 'strategy', name: '전략', emoji: '♟️' },
         { id: 'adventure', name: '어드벤처', emoji: '🗺️' },
         { id: 'simulation', name: '시뮬레이션', emoji: '🏗️' },
-        { id: 'sports_racing', name: '스포츠 & 레이싱', emoji: '🏎️' }, // ID updated for clarity
+        { id: 'sports_racing', name: '스포츠 & 레이싱', emoji: '🏎️' },
         { id: 'indie', name: '인디', emoji: '💡' },
         { id: 'casual', name: '캐주얼', emoji: '🎲' },
         { id: 'open_world', name: '오픈월드', emoji: '🌍' },
@@ -19,10 +19,12 @@ export async function onRequest(context) {
         { id: 'fantasy', name: '판타지', emoji: '🐉' },
     ];
 
+    // Return the genre list as a JSON response
     return new Response(JSON.stringify(genres), {
         headers: {
             'Content-Type': 'application/json',
-            'Cache-Control': 'public, max-age=86400' // Cache for 24 hours
+            // Cache this response for a day as it doesn't change often
+            'Cache-Control': 'public, max-age=86400',
         },
     });
 }
