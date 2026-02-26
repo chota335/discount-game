@@ -7,7 +7,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   async function fetchGames() {
     try {
-      const response = await fetch("/functions/genres/all", {
+      const response = await fetch("/genres/all", {
         headers: {
           'Accept': 'application/json'
         }
