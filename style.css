@@ -1,14 +1,13 @@
 /* === GLOBAL STYLES === */
 :root {
-    --background-color: #121212;
-    --surface-color: #1e1e1e;
+    --background-color: #0f1117;
+    --surface-color: #1a1d26;
     --primary-text-color: #e0e0e0;
     --secondary-text-color: #a0a0a0;
-    --accent-color: #007bff;
-    --accent-hover-color: #0056b3;
-    --card-border-color: #333;
-    --success-color: #28a745;
-    --danger-color: #dc3545;
+    --accent-color: #3882f6;
+    --accent-hover-color: #1c64d8;
+    --card-border-color: #2c313a;
+    --success-color: #4ade80; /* User-suggested vibrant green */
 }
 
 body {
@@ -94,7 +93,7 @@ img {
 .genre-card {
     background-color: var(--surface-color);
     border: 1px solid var(--card-border-color);
-    border-radius: 12px;
+    border-radius: 14px; /* User-suggested radius */
     padding: 20px;
     text-align: center;
     transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
@@ -160,7 +159,7 @@ img {
 
 .deal-card {
     background-color: var(--surface-color);
-    border-radius: 10px;
+    border-radius: 14px; /* User-suggested radius */
     overflow: hidden;
     display: flex;
     flex-direction: column;
@@ -210,12 +209,13 @@ img {
     align-items: center;
     justify-content: space-between;
     gap: 10px;
+    padding: 0 15px 15px;
 }
 
 .sale-price {
     font-size: 1.6rem;
     font-weight: bold;
-    color: var(--success-color);
+    color: var(--success-color); /* Applied user color */
 }
 
 .normal-price {
@@ -225,8 +225,8 @@ img {
 }
 
 .savings-badge {
-    background-color: var(--danger-color);
-    color: #fff;
+    background-color: var(--success-color); /* Applied user color */
+    color: #121212; /* Darker text for better contrast on green */
     font-weight: bold;
     padding: 5px 10px;
     border-radius: 5px;
