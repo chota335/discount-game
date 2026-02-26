@@ -27,12 +27,12 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function displayGames(games) {
-    const aaaGames = games.filter(game => game.metacriticScore >= 80).slice(0, 10);
-    const highDiscountGames = games.filter(game => parseFloat(game.savings) >= 80).slice(0, 10);
+    const aaaGames = games.filter(game => game.metacriticScore >= 80).slice(0, 20);
+    const highDiscountGames = games.filter(game => parseFloat(game.savings) >= 80).slice(0, 20);
 
     renderGames(aaaContainer, aaaGames);
     renderGames(highDiscountContainer, highDiscountGames);
-    renderGames(gamesContainer, games.slice(0, 50)); 
+    renderGames(gamesContainer, games.slice(0, 100)); 
   }
 
   function renderGames(container, games) {

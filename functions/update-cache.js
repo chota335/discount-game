@@ -2,7 +2,7 @@ export async function onRequest(context) {
   const { env } = context;
 
   const CHEAP_URL =
-    "https://www.cheapshark.com/api/1.0/deals?storeID=1&pageSize=500";
+    "https://www.cheapshark.com/api/1.0/deals?storeID=1&pageSize=1000";
 
   const dealsRes = await fetch(CHEAP_URL);
   if (!dealsRes.ok) {
