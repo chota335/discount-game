@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
     async function fetchGames(category) {
         dealsContainer.innerHTML = ''; // Clear existing deals
         try {
-            const response = await fetch(`/deals/${category}`);
+            const response = await fetch(`/api/deals/${category}`);
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
