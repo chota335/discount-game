@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // --- Main Page Logic: Load Genres ---
     async function loadMainPage() {
         try {
-            const response = await fetch('/genres');
+            const response = await fetch('/api/genres'); 
             if (!response.ok) throw new Error('장르 데이터를 불러오지 못했습니다.');
             const genres = await response.json();
 
@@ -30,7 +30,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                     <div class="genre-emoji">${genre.emoji}</div>
                     <div class="genre-name">${genre.name}</div>
                 `;
-                // ✅ Corrected to point to genre.html with 'g' parameter
                 card.addEventListener("click", () => {
                     window.location.href = `genre.html?g=${genre.id}`;
                 });
@@ -43,63 +42,146 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-    // --- Deals Page Logic: Load Genres and Deals ---
+    // --- Deals Page Logic ---
     async function loadDealsPage() {
         const urlParams = new URLSearchParams(window.location.search);
-        const genreId = urlParams.get('g') || 'action'; // Default to action if no genre is specified
+        let currentGenre = urlParams.get('g') || 'action';
+        let searchQuery = urlParams.get('q') || '';
+        let sortBy = urlParams.get('sortBy') || 'popularity';
+        let maxPrice = urlParams.get('maxPrice') || '50';
+        let metacritic = urlParams.get('metacritic') || '0';
+
+        // --- Filter UI Element Selectors ---
+        const searchInput = document.getElementById('search-input');
+        const sortBySelect = document.getElementById('sort-by');
+        const maxPriceSlider = document.getElementById('max-price');
+        const maxPriceValue = document.getElementById('max-price-value');
+        const metacriticInput = document.getElementById('metacritic-score');
+
+        // --- Initialize Filter UI ---
+        if (searchInput) searchInput.value = searchQuery;
+        if (sortBySelect) sortBySelect.value = sortBy;
+        if (maxPriceSlider) maxPriceSlider.value = maxPrice;
+        if (maxPriceValue) maxPriceValue.textContent = maxPrice;
+        if (metacriticInput) metacriticInput.value = metacritic > 0 ? metacritic : '';
 
         if (loading) loading.style.display = 'block';
 
         try {
-            const [genresResponse, dealsResponse] = await Promise.all([
-                fetch('/genres'),
-                fetch(`/api/deals?g=${genreId}`)
-            ]);
-
+            const genresResponse = await fetch('/api/genres');
             if (!genresResponse.ok) throw new Error('장르 데이터를 불러오지 못했습니다.');
-            if (!dealsResponse.ok) throw new Error('할인 데이터를 불러오지 못했습니다.');
-
             const genres = await genresResponse.json();
-            const deals = await dealsResponse.json();
 
-            const currentGenre = genres.find(g => g.id === genreId);
-            if (pageHeader && currentGenre) {
-                pageHeader.textContent = `${currentGenre.emoji} ${currentGenre.name} 게임 할인`;
-            }
-            
-            renderGenreFilters(genres, genreId);
-
-            if (loading) loading.style.display = 'none';
-            renderDeals(deals);
+            renderGenreFilters(genres, currentGenre);
+            updatePageTitle(genres, currentGenre);
+            await fetchAndRenderDeals();
 
         } catch (error) {
             console.error('Error loading deals page:', error);
             if (loading) loading.innerHTML = '<div class="error">❌ 데이터를 불러오는 데 실패했습니다.</div>';
         }
+
+        // --- Event Listeners for Filters ---
+        function setupFilterEventListeners() {
+            const applyFilters = () => {
+                searchQuery = searchInput ? searchInput.value : '';
+                sortBy = sortBySelect ? sortBySelect.value : 'popularity';
+                maxPrice = maxPriceSlider ? maxPriceSlider.value : '50';
+                metacritic = metacriticInput ? (metacriticInput.value || '0') : '0';
+                
+                // Update URL and fetch deals
+                updateURLAndFetch();
+            };
+            
+            let debounceTimer;
+            if (searchInput) {
+                searchInput.addEventListener('input', () => {
+                    clearTimeout(debounceTimer);
+                    debounceTimer = setTimeout(applyFilters, 500); // Debounce search input
+                });
+            }
+            if (sortBySelect) sortBySelect.addEventListener('change', applyFilters);
+            if (maxPriceSlider) {
+                maxPriceSlider.addEventListener('input', () => {
+                    if(maxPriceValue) maxPriceValue.textContent = maxPriceSlider.value;
+                });
+                maxPriceSlider.addEventListener('change', applyFilters);
+f            }
+            if(metacriticInput) {
+                metacriticInput.addEventListener('change', applyFilters);
+            }
+        }
+        
+        function updateURLAndFetch() {
+            const params = new URLSearchParams();
+            params.set('g', currentGenre);
+            if (searchQuery) params.set('q', searchQuery);
+            if (sortBy !== 'popularity') params.set('sortBy', sortBy);
+            if (maxPrice !== '50') params.set('maxPrice', maxPrice);
+            if (metacritic !== '0') params.set('metacritic', metacritic);
+
+            // Update URL without reloading the page
+            history.pushState(null, '', `?${params.toString()}`);
+            fetchAndRenderDeals();
+        }
+
+
+        // --- Fetch and Render Deals ---
+        async function fetchAndRenderDeals() {
+            if (loading) loading.style.display = 'block';
+            if (dealsContainer) dealsContainer.innerHTML = '';
+
+            const apiUrl = `/api/deals?g=${currentGenre}&q=${searchQuery}&sortBy=${sortBy}&maxPrice=${maxPrice}&metacritic=${metacritic}`;
+
+            try {
+                const dealsResponse = await fetch(apiUrl);
+                if (!dealsResponse.ok) throw new Error('할인 데이터를 불러오지 못했습니다.');
+                const deals = await dealsResponse.json();
+
+                if (loading) loading.style.display = 'none';
+                renderDeals(deals);
+            } catch (error) {
+                 console.error('Error fetching deals:', error);
+                 if (loading) loading.innerHTML = '<div class="error">❌ 할인 정보를 불러오는 데 실패했습니다.</div>';
+            }
+        }
+        setupFilterEventListeners();
     }
 
-    // --- Render Genre Filter Buttons ---
+    // --- Helper Functions ---
+    function updatePageTitle(genres, activeGenreId) {
+        const currentGenre = genres.find(g => g.id === activeGenreId);
+        if (pageHeader && currentGenre) {
+            pageHeader.textContent = `${currentGenre.emoji} ${currentGenre.name} 게임 할인`;
+            document.title = `${currentGenre.name} 게임 할인 | 🔥 스팀 할인`;
+        }
+    }
+
     function renderGenreFilters(genres, activeGenreId) {
         if (!filterNav) return;
-        filterNav.innerHTML = ''; 
+        filterNav.innerHTML = '';
         genres.forEach(genre => {
-            const button = document.createElement('button');
+            const button = document.createElement('a'); // Use links for better SPA-like navigation
+            button.href = `genre.html?g=${genre.id}`;
             button.textContent = genre.name;
             button.className = (genre.id === activeGenreId) ? 'active' : '';
-            button.onclick = () => {
-                window.location.href = `genre.html?g=${genre.id}`;
-            };
+            
+            button.addEventListener('click', (e) => {
+                e.preventDefault(); // Prevent full page reload
+                history.pushState(null, '', button.href); // Update URL
+                // Re-initialize the deals page content
+                loadDealsPage();
+            });
             filterNav.appendChild(button);
         });
     }
 
-    // --- Render Deal Cards ---
     function renderDeals(deals) {
         if (!dealsContainer) return;
         dealsContainer.innerHTML = '';
 
         if (deals.length === 0) {
-            dealsContainer.innerHTML = '<div class="no-deals">현재 진행 중인 할인 상품이 없습니다.</div>';
+            dealsContainer.innerHTML = '<div class="no-deals">🥲 해당 조건에 맞는 할인 상품이 없습니다.</div>';
             return;
         }
 
@@ -108,21 +190,27 @@ document.addEventListener('DOMContentLoaded', async () => {
             card.href = `https://www.cheapshark.com/redirect?dealID=${deal.dealID}`;
             card.className = 'deal-card';
             card.target = '_blank';
+            card.rel = 'noopener noreferrer';
+            
+            const savingsPercent = Math.round(parseFloat(deal.savings));
+            const metacriticScore = deal.metacriticScore || 'N/A';
+            const steamRating = deal.steamRatingPercent || 'N/A';
+
             card.innerHTML = `
-                <img src="${deal.thumb}" alt="${deal.title}" class="deal-thumb">
+                <img src="${deal.thumb}" alt="${deal.title}" class="deal-thumb" loading="lazy">
                 <div class="deal-info">
                     <h3 class="deal-title">${deal.title}</h3>
                     <div class="deal-meta">
-                        <span class="metacritic-score">Metacritic: ${deal.metacriticScore}</span>
-                        <span class="steam-rating">Steam: ${deal.steamRatingPercent}%</span>
+                        <span class="metacritic-score">Metascore: ${metacriticScore}</span>
+                        <span class="steam-rating">Steam: ${steamRating}%</span>
                     </div>
                 </div>
                 <div class="deal-pricing">
-                    <div>
+                    <div class="price-tags">
                         <span class="sale-price">$${deal.salePrice}</span>
                         <span class="normal-price">$${deal.normalPrice}</span>
                     </div>
-                    <span class="savings-badge">-${Math.round(deal.savings)}%</span>
+                    ${savingsPercent > 0 ? `<span class="savings-badge">-${savingsPercent}%</span>` : ''}
                 </div>
             `;
             dealsContainer.appendChild(card);

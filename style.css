@@ -125,7 +125,7 @@ img {
     margin-top: 25px;
 }
 
-.filter-nav button {
+.filter-nav button, .filter-nav a {
     background-color: transparent;
     color: var(--secondary-text-color);
     border: 1px solid var(--card-border-color);
@@ -135,20 +135,81 @@ img {
     font-size: 0.95rem;
     font-weight: 500;
     transition: all 0.2s ease;
+    text-decoration: none;
 }
 
-.filter-nav button:hover {
+.filter-nav button:hover, .filter-nav a:hover {
     background-color: var(--accent-hover-color);
     color: #fff;
     border-color: var(--accent-hover-color);
 }
 
-.filter-nav button.active {
+.filter-nav button.active, .filter-nav a.active {
     background-color: var(--accent-color);
     color: #fff;
     border-color: var(--accent-color);
     font-weight: 600;
 }
+
+.filter-controls {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    padding: 25px;
+    background-color: var(--surface-color);
+    border-radius: 10px;
+    margin-top: 30px;
+}
+
+.search-wrapper {
+    flex-grow: 1;
+    min-width: 250px;
+}
+
+#search-input {
+    width: 100%;
+    padding: 12px 15px;
+    background-color: var(--background-color);
+    border: 1px solid var(--card-border-color);
+    color: var(--primary-text-color);
+    border-radius: 8px;
+    font-size: 1rem;
+}
+
+.filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    align-items: center;
+}
+
+.filter-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--secondary-text-color);
+}
+
+.filter-group label { 
+    font-size: 0.9rem; 
+    white-space: nowrap;
+}
+
+.filter-group select, .filter-group input[type="number"] {
+    background-color: var(--background-color);
+    border: 1px solid var(--card-border-color);
+    color: var(--primary-text-color);
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+}
+
+.filter-group input[type="range"] {
+    cursor: pointer;
+}
+
 
 #deals-container {
     display: grid;
@@ -253,6 +314,14 @@ footer {
     color: var(--secondary-text-color);
 }
 
+@media (max-width: 992px) {
+    .filter-controls {
+        flex-direction: column;
+    }
+    .search-wrapper { width: 100%; }
+    .filters { width: 100%; justify-content: space-around; }
+}
+
 @media (max-width: 768px) {
     .container { padding: 15px; }
     .page-header h1 { font-size: 2.2rem; }
@@ -262,6 +331,7 @@ footer {
 @media (max-width: 480px) {
     #deals-container { grid-template-columns: 1fr; }
     .filter-nav { gap: 8px; }
-    .filter-nav button { padding: 8px 15px; }
+    .filter-nav button, .filter-nav a { padding: 8px 15px; }
     .navbar { flex-direction: column; gap: 10px; }
+    .filters { flex-direction: column; align-items: stretch; }
 }

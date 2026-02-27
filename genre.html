@@ -18,6 +18,31 @@
   <nav id="filter-nav" class="filter-nav"></nav>
 </header>
 
+<div class="container filter-controls">
+  <div class="search-wrapper">
+    <input type="search" id="search-input" placeholder="게임 이름 검색...">
+  </div>
+  <div class="filters">
+    <div class="filter-group">
+      <label for="sort-by">정렬:</label>
+      <select id="sort-by">
+        <option value="popularity">인기순</option>
+        <option value="price">가격순</option>
+        <option value="savings">할인율순</option>
+        <option value="metacritic">메타크리틱</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <label for="max-price">최대 가격: $<span id="max-price-value">50</span></label>
+      <input type="range" id="max-price" min="0" max="50" value="50">
+    </div>
+    <div class="filter-group">
+      <label for="metacritic-score">메타크리틱 점수:</label>
+      <input type="number" id="metacritic-score" min="0" max="100" placeholder="70">
+    </div>
+  </div>
+</div>
+
 <main id="deals-container" class="deals-grid container"></main>
 <div id="loading" class="loading">할인 목록을 불러오는 중...</div>
 
