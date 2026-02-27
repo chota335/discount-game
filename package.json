@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "build": ""
+    "build": "mkdir -p public && cp index.html genre.html style.css main.js deals.js data.json ads.txt public/"
   },
   "dependencies": {}
 }
