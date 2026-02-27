@@ -1,92 +1,66 @@
+export async function onRequest(context) {
+  const { searchParams } = new URL(context.request.url);
+  const searchQuery = searchParams.get('q');
+  const filter = searchParams.get('filter');
 
-export default async function handler(req, res) {
+  // Base API URL
+  let apiUrl = "https://www.cheapshark.com/api/1.0/deals?storeID=1&pageSize=60&onSale=1";
+
+  // Apply filters
+  if (filter === 'aaa') {
+    // For AAA games, sort by savings and filter for games with at least 80% discount
+    apiUrl += "&AAA=1&sortBy=Savings&savings=80";
+  } else {
+    // For all other general deals, sort by deal rating
+    apiUrl += "&sortBy=Deal%20Rating";
+  }
+
+  // Apply search query if it exists
+  if (searchQuery) {
+    apiUrl += `&title=${encodeURIComponent(searchQuery)}`;
+  }
+
   try {
-    const { g: genreId, q: searchQuery, sortBy, maxPrice, metacritic } = req.query;
+    const dealsResponse = await fetch(apiUrl);
+    if (!dealsResponse.ok) {
+      throw new Error(`Failed to fetch deals from CheapShark API. Status: ${dealsResponse.status}`);
+    }
+    let deals = await dealsResponse.json();
 
-    // 1. Fetch all deals
-    const dealsResponse = await fetch(
-      "https://www.cheapshark.com/api/1.0/deals?storeID=1&pageSize=60"
-    );
-    if (!dealsResponse.ok) throw new Error('Failed to fetch deals');
-    const deals = await dealsResponse.json();
+    // If no deals are found, return an empty array
+    if (!deals || deals.length === 0) {
+      return new Response(JSON.stringify([]), { headers: { 'Content-Type': 'application/json' } });
+    }
 
-    // 2. Fetch details for all games in the deals list
+    // Enrich deals with better thumbnail images from the games API
     const gameIDs = deals.map(deal => deal.gameID).join(",");
     const gamesInfoResponse = await fetch(`https://www.cheapshark.com/api/1.0/games?ids=${gameIDs}`);
-    if (!gamesInfoResponse.ok) throw new Error('Failed to fetch game details');
-    const gamesInfo = await gamesInfoResponse.json();
-
-    // 3. Fetch all genres
-    const genresResponse = await fetch("https://www.cheapshark.com/api/1.0/genres");
-    if (!genresResponse.ok) throw new Error('Failed to fetch genres');
-    const genres = await genresResponse.json();
     
-    // 4. Merge data and add popularity score
-    const enrichedData = deals.map(deal => {
-      const info = gamesInfo[deal.gameID];
-      const popularityScore = (parseFloat(deal.steamRatingPercent || 0) * 0.5) +
-                              (parseFloat(deal.dealRating || 0) * 0.3) +
-                              (parseFloat(deal.savings || 0) * 0.2);
-      return {
-        ...deal,
-        genres: info ? info.info.genres : [],
-        cheapestPriceEver: info ? info.cheapestPriceEver : { price: "9999" },
-        popularityScore,
-      };
+    let enrichedDeals = deals;
+    if (gamesInfoResponse.ok) {
+      const gamesInfo = await gamesInfoResponse.json();
+      enrichedDeals = deals.map(deal => {
+        const gameInfo = gamesInfo[deal.gameID];
+        return {
+          ...deal,
+          thumb: gameInfo ? gameInfo.info.thumb : deal.thumb, 
+        };
+      });
+    } else {
+        // If fetching extra info fails, we still return the original deals
+        console.error('Could not fetch additional game info. Proceeding with original deal data.');
+    }
+
+    // Return the final list of deals
+    return new Response(JSON.stringify(enrichedDeals), {
+      headers: { 'Content-Type': 'application/json' },
     });
 
-    // 5. Apply filters
-    let filteredData = enrichedData;
-
-    if (genreId && genreId !== 'all') {
-      const genreMap = new Map(genres.map(g => [g.genreID.toString(), g.name.toLowerCase()]));
-      const targetGenreName = genreMap.get(genreId);
-      if (targetGenreName) {
-        filteredData = filteredData.filter(deal => 
-            deal.genres && deal.genres.map(g => g.toLowerCase()).includes(targetGenreName)
-        );
-      }
-    }
-
-    if (searchQuery) {
-        filteredData = filteredData.filter(deal =>
-            deal.title.toLowerCase().includes(searchQuery.toLowerCase())
-        );
-    }
-
-    if (maxPrice) {
-        filteredData = filteredData.filter(deal =>
-            parseFloat(deal.salePrice) <= parseFloat(maxPrice)
-        );
-    }
-
-    if (metacritic) {
-        filteredData = filteredData.filter(deal =>
-            parseInt(deal.metacriticScore) >= parseInt(metacritic)
-        );
-    }
-
-    // 6. Apply sorting
-    switch(sortBy) {
-        case 'price':
-            filteredData.sort((a, b) => parseFloat(a.salePrice) - parseFloat(b.salePrice));
-            break;
-        case 'metacritic':
-            filteredData.sort((a, b) => parseInt(b.metacriticScore) - parseInt(a.metacriticScore));
-            break;
-        case 'savings':
-            filteredData.sort((a, b) => parseFloat(b.savings) - parseFloat(a.savings));
-            break;
-        default:
-            filteredData.sort((a, b) => b.popularityScore - a.popularityScore);
-            break;
-    }
-
-    // 7. Send the final combined and filtered data
-    res.status(200).json(filteredData);
-
   } catch (error) {
-    console.error("API Route Error:", error);
-    res.status(500).json({ error: "데이터를 불러오는 데 실패했습니다." });
+    console.error(`Error in API route (/api/deals):`, error);
+    return new Response(JSON.stringify({ error: "An unexpected error occurred while fetching deals." }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' },
+    });
   }
 }
