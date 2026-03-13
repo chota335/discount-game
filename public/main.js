@@ -16,6 +16,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     // --- Main Page Logic: Load Genres ---
     async function loadMainPage() {
         try {
+            // Automatically update the cache on page load
+            await fetch('/update-cache');
+
             const response = await fetch('/genres');
             if (!response.ok) throw new Error('장르 데이터를 불러오지 못했습니다.');
             const genres = await response.json();
