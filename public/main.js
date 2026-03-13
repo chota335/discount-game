@@ -1,108 +1,56 @@
-document.addEventListener('DOMContentLoaded', async () => {
+document.addEventListener('DOMContentLoaded', () => {
     // --- DOM Element Selectors ---
-    const genreGrid = document.getElementById('genreGrid');
     const dealsContainer = document.getElementById('deals-container');
     const loading = document.getElementById('loading');
-    const pageHeader = document.querySelector('.page-header h1');
-    const filterNav = document.getElementById('filter-nav');
+    const searchInput = document.getElementById('search-input');
+    const filterAllBtn = document.getElementById('filter-all');
+    const filterAaaBtn = document.getElementById('filter-aaa');
 
-    // --- Page-based Routing ---
-    if (genreGrid) {
-        await loadMainPage();
-    } else if (dealsContainer) {
-        await loadDealsPage();
-    }
+    let currentFilter = 'all'; // 'all' or 'aaa'
+    let searchQuery = '';
+    let debounceTimer;
 
-    // --- Main Page Logic: Load Genres ---
-    async function loadMainPage() {
-        try {
-            // Automatically update the cache on page load
-            await fetch('/update-cache');
-
-            const response = await fetch('/genres');
-            if (!response.ok) throw new Error('장르 데이터를 불러오지 못했습니다.');
-            const genres = await response.json();
-
-            if (loading) loading.style.display = 'none';
-            if (genreGrid) genreGrid.style.display = 'grid';
-
-            genres.forEach(genre => {
-                const card = document.createElement('div');
-                card.className = 'genre-card';
-                card.innerHTML = `
-                    <div class="genre-emoji">${genre.emoji}</div>
-                    <div class="genre-name">${genre.name}</div>
-                `;
-                // ✅ Corrected to point to genre.html with 'g' parameter
-                card.addEventListener("click", () => {
-                    window.location.href = `genre.html?g=${genre.id}`;
-                });
-                genreGrid.appendChild(card);
-            });
-
-        } catch (error) {
-            console.error('Error fetching genres:', error);
-            if (loading) loading.textContent = '❌ 장르 목록을 불러오는 데 실패했습니다.';
-        }
-    }
-
-    // --- Deals Page Logic: Load Genres and Deals ---
-    async function loadDealsPage() {
-        const urlParams = new URLSearchParams(window.location.search);
-        const genreId = urlParams.get('g') || 'action'; // Default to action if no genre is specified
-
+    // --- Main Function to Fetch and Render Deals ---
+    const fetchAndRenderDeals = async () => {
         if (loading) loading.style.display = 'block';
+        if (dealsContainer) dealsContainer.innerHTML = '';
+
+        // Construct API URL based on current filters
+        const params = new URLSearchParams();
+        if (searchQuery) {
+            params.append('q', searchQuery);
+        }
+        if (currentFilter === 'aaa') {
+            params.append('filter', 'aaa');
+        }
+        
+        const apiUrl = `/api/deals?${params.toString()}`;
 
         try {
-            const [genresResponse, dealsResponse] = await Promise.all([
-                fetch('/genres'),
-                fetch(`/api/deals?g=${genreId}`)
-            ]);
-
-            if (!genresResponse.ok) throw new Error('장르 데이터를 불러오지 못했습니다.');
-            if (!dealsResponse.ok) throw new Error('할인 데이터를 불러오지 못했습니다.');
-
-            const genres = await genresResponse.json();
-            const deals = await dealsResponse.json();
-
-            const currentGenre = genres.find(g => g.id === genreId);
-            if (pageHeader && currentGenre) {
-                pageHeader.textContent = `${currentGenre.emoji} ${currentGenre.name} 게임 할인`;
+            const response = await fetch(apiUrl);
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
             }
-            
-            renderGenreFilters(genres, genreId);
+            const deals = await response.json();
 
             if (loading) loading.style.display = 'none';
             renderDeals(deals);
 
         } catch (error) {
-            console.error('Error loading deals page:', error);
-            if (loading) loading.innerHTML = '<div class="error">❌ 데이터를 불러오는 데 실패했습니다.</div>';
+            console.error('Error fetching deals:', error);
+            if (loading) {
+                loading.innerHTML = '<div class="error">❌ 할인 정보를 불러오는 데 실패했습니다. 잠시 후 다시 시도해주세요.</div>';
+            }
         }
-    }
+    };
 
-    // --- Render Genre Filter Buttons ---
-    function renderGenreFilters(genres, activeGenreId) {
-        if (!filterNav) return;
-        filterNav.innerHTML = ''; 
-        genres.forEach(genre => {
-            const button = document.createElement('button');
-            button.textContent = genre.name;
-            button.className = (genre.id === activeGenreId) ? 'active' : '';
-            button.onclick = () => {
-                window.location.href = `genre.html?g=${genre.id}`;
-            };
-            filterNav.appendChild(button);
-        });
-    }
-
-    // --- Render Deal Cards ---
-    function renderDeals(deals) {
+    // --- Render Deals on the Page ---
+    const renderDeals = (deals) => {
         if (!dealsContainer) return;
         dealsContainer.innerHTML = '';
 
         if (deals.length === 0) {
-            dealsContainer.innerHTML = '<div class="no-deals">현재 진행 중인 할인 상품이 없습니다.</div>';
+            dealsContainer.innerHTML = '<div class="no-deals">🥲 해당 조건에 맞는 할인 상품이 없습니다.</div>';
             return;
         }
 
@@ -111,24 +59,58 @@ document.addEventListener('DOMContentLoaded', async () => {
             card.href = `https://www.cheapshark.com/redirect?dealID=${deal.dealID}`;
             card.className = 'deal-card';
             card.target = '_blank';
+            card.rel = 'noopener noreferrer';
+            
+            const savingsPercent = Math.round(parseFloat(deal.savings));
+            const metacriticScore = deal.metacriticScore || 'N/A';
+
             card.innerHTML = `
-                <img src="${deal.thumb}" alt="${deal.title}" class="deal-thumb">
+                <img src="${deal.thumb}" alt="${deal.title}" class="deal-thumb" loading="lazy">
                 <div class="deal-info">
                     <h3 class="deal-title">${deal.title}</h3>
                     <div class="deal-meta">
-                        <span class="metacritic-score">Metacritic: ${deal.metacriticScore}</span>
-                        <span class="steam-rating">Steam: ${deal.steamRatingPercent}%</span>
+                        <span class="metacritic-score">Metascore: ${metacriticScore}</span>
                     </div>
                 </div>
                 <div class="deal-pricing">
-                    <div>
+                    <div class="price-tags">
                         <span class="sale-price">$${deal.salePrice}</span>
                         <span class="normal-price">$${deal.normalPrice}</span>
                     </div>
-                    <span class="savings-badge">-${Math.round(deal.savings)}%</span>
+                    ${savingsPercent > 0 ? `<span class="savings-badge">-${savingsPercent}%</span>` : ''}
                 </div>
             `;
             dealsContainer.appendChild(card);
         });
+    };
+
+    // --- Event Listeners ---
+    if (searchInput) {
+        searchInput.addEventListener('input', (e) => {
+            clearTimeout(debounceTimer);
+            searchQuery = e.target.value;
+            debounceTimer = setTimeout(() => {
+                fetchAndRenderDeals();
+            }, 500); // Debounce for 500ms
+        });
     }
+
+    filterAllBtn?.addEventListener('click', () => {
+        if (currentFilter === 'all') return;
+        currentFilter = 'all';
+        filterAllBtn.classList.add('active');
+        filterAaaBtn.classList.remove('active');
+        fetchAndRenderDeals();
+    });
+
+    filterAaaBtn?.addEventListener('click', () => {
+        if (currentFilter === 'aaa') return;
+        currentFilter = 'aaa';
+        filterAaaBtn.classList.add('active');
+        filterAllBtn.classList.remove('active');
+        fetchAndRenderDeals();
+    });
+
+    // --- Initial Load ---
+    fetchAndRenderDeals();
 });

@@ -2,8 +2,8 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <title>🔥 스팀 할인 | 장르별 게임 추천</title>
-  <meta name="description" content="스팀(Steam) 실시간 할인 정보를 장르별로 확인하고, 최고의 게임을 가장 저렴한 가격에 만나보세요.">
+  <title>🔥 스팀 할인 정보 | DiscountDealGame</title>
+  <meta name="description" content="스팀(Steam) 실시간 게임 할인 정보를 확인하고, 최고의 게임을 가장 저렴한 가격에 만나보세요.">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="style.css">
 </head>
@@ -11,43 +11,30 @@
 
 <nav class="navbar">
     <div class="logo"><a href="/">🎮 DiscountDealGame</a></div>
-    <button id="updateCacheBtn">캐시 업데이트</button>
 </nav>
 
 <header class="page-header container">
-  <h1>🔥 스팀 할인: 장르별 게임</h1>
-  <p>원하는 장르를 선택하여 최고의 할인 상품을 찾아보세요.</p>
+  <h1>실시간 스팀 할인 정보</h1>
+  <p>지금 가장 인기 있는 할인 게임들을 만나보세요!</p>
 </header>
 
-<main id="genreGrid" class="genre-grid container"></main>
-<div id="loading" class="loading">장르 목록을 불러오는 중...</div>
+<div class="container filter-controls">
+  <div class="search-wrapper">
+    <input type="search" id="search-input" placeholder="게임 이름으로 검색...">
+  </div>
+  <div class="filters">
+    <button id="filter-all" class="filter-btn active">모든 할인</button>
+    <button id="filter-aaa" class="filter-btn">AAA 게임 (80% 이상)</button>
+  </div>
+</div>
+
+<main id="deals-container" class="deals-grid container"></main>
+<div id="loading" class="loading">할인 목록을 불러오는 중...</div>
 
 <footer>
     <p>© 2024 DiscountDealGame. 모든 권리 보유.</p>
 </footer>
 
-<script>
-  document.getElementById('updateCacheBtn').addEventListener('click', async () => {
-    const btn = document.getElementById('updateCacheBtn');
-    btn.disabled = true;
-    btn.textContent = '업데이트 중...';
-    try {
-      const response = await fetch('/update-cache');
-      if (response.ok) {
-        alert('캐시가 성공적으로 업데이트되었습니다.');
-        location.reload();
-      } else {
-        const errorText = await response.text();
-        alert('캐시 업데이트 실패: ' + errorText);
-      }
-    } catch (error) {
-      alert('캐시 업데이트 중 오류 발생: ' + error.message);
-    } finally {
-      btn.disabled = false;
-      btn.textContent = '캐시 업데이트';
-    }
-  });
-</script>
 <script src="main.js"></script>
 </body>
 </html>
