@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
             params.append('filter', 'aaa');
         }
         
-        const apiUrl = `/api/deals?${params.toString()}`;
+        const apiUrl = `/functions/deals?${params.toString()}`;
 
         try {
             const response = await fetch(apiUrl);
